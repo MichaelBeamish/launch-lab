@@ -12,7 +12,9 @@ challenges, all on the original engine's physics.
 - **Process:** spec-first tasks, ADRs, recorded playtests. See [`CLAUDE.md`](CLAUDE.md) and [`docs/`](docs/).
 
 ## Requirements to play (once released)
-A legitimate copy of *Halo: The Master Chief Collection* on Steam, launched with anti-cheat disabled. This repository
+A legitimate copy of *Halo: Combat Evolved Anniversary* on Steam (it installs as part of *Halo: The Master Chief
+Collection*; the other games aren't needed), with Halo CE Campaign and Multiplayer installed, launched with anti-cheat
+disabled. This repository
 contains **no game files**: only original scripts, geometry sources, tags and documentation.
 
 ## Legal

@@ -9,6 +9,13 @@ Re-check a source before relying on it in a spec: the tools are updated, and wik
 - **Ownership: the sources conflict.** Microsoft says the H1 tools are "available to anyone, regardless of which titles
   they own". c20 says you need MCC plus the matching content, and that the Windows Store version is unsupported
   ([c20 mod tools](https://c20.reclaimers.net/general/mod-tools/)). Either way, **playing** the result needs MCC on Steam.
+- **What to buy (checked 2026-11-23):** only *Halo: Combat Evolved Anniversary* (Steam app 1064221). On Steam, MCC is a
+  launcher and each game is a separately sold add-on, so buying Halo CE Anniversary alone installs the MCC launcher with
+  Halo CE. It was $9.99 alone at the 2020 launch ([Steam](https://store.steampowered.com/app/1064221),
+  [Xbox Wire](https://news.xbox.com/en-us/2020/03/03/halo-combat-evolved-anniversary-available-now-for-pc-with-the-master-chief-collection/)).
+  The full collection isn't needed. Install **both** Halo CE Campaign and Multiplayer: mod pages report infinite loading when
+  one is missing ([Steam Workshop note](https://steamcommunity.com/workshop/filedetails/discussion/2945040447/3820795131608601126)).
+  Anniversary's remastered graphics are a switchable visual layer; we test in classic graphics (to be confirmed in task 2).
 - **CONFIRMED.** After installing (and after every tools update), run `(Extract).bat`. It unpacks the stock `tags` and `data`
   (including every singleplayer `.hsc` script).
 - **CONFIRMED.** The kit has four parts ([c20 H1A-EK](https://c20.reclaimers.net/h1/h1-ek/)):

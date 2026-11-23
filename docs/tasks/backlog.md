@@ -20,7 +20,8 @@ approval**. No remote yet. Creating the GitHub repo and protecting `main` is a l
 **Accept:** `git status` is clean; `git log` shows one commit; ignored patterns are verified with `git check-ignore`.
 
 ## 2. Toolchain smoke test (no custom content)
-Owner installs MCC + Halo CE on Steam and the *Halo: CE Mod Tools – MCC*, then runs `(Extract).bat`. Load a stock
+Owner buys *Halo: Combat Evolved Anniversary* on Steam (installs MCC with Halo CE; Campaign **and** Multiplayer) and
+installs the free *Halo: CE Mod Tools – MCC*, then runs `(Extract).bat`. Load a stock
 singleplayer level in `halo_tag_test.exe`, spawn a Warthog (`cheat_spawn_warthog`), and launch it with grenades. Then do the same
 in MCC with a stock level. Record the install paths in the git-ignored local config, the versions and observations.
 **Accept:**
