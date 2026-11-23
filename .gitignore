@@ -1,0 +1,36 @@
+# Machine-specific config (install paths)
+tools/local.config.ps1
+.claude/settings.local.json
+
+# Built maps and Halo cache/resource files: never commit (ADR 0003)
+*.map
+*.yelo
+
+# Tool output and logs
+debug.txt
+*.log
+**/lightmap_cache/
+
+# Stock content must never enter the repo. Our own tags live only under mod/tags/levels/launch_lab/
+/tags/
+/data/
+/maps/
+
+# Game data / disc images (browser experiments)
+*.iso
+*.xiso
+*.xbe
+
+# Tool binaries
+*.exe
+*.dll
+
+# Node tooling (task 7)
+node_modules/
+dist/
+coverage/
+
+# OS / editor
+Thumbs.db
+.DS_Store
+*.blend1
