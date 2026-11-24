@@ -23,3 +23,30 @@ The owner's review document. Each entry covers what it is, how we use it, and an
   if they were pre-placed and named.
 - **One-liner:** "I designed the challenge logic as polled state machines over trigger volumes, because the scripting layer
   has no event system."
+
+### Standalone vs a built map (task 2)
+- **What:** `halo_tag_test.exe` ("Standalone") runs the engine straight from loose tag files in the mod tools' `tags\` folder,
+  with a debug console (`~`) and cheats. MCC only plays *built* `.map` files: Tool packs every tag a scenario needs into one cache file.
+- **Frontend analogy:** Standalone is the dev server serving source files with devtools open; the `.map` is the production
+  bundle. "Works in dev" isn't "works in prod", so every gameplay task ends with an MCC check.
+- **Why the Steam "Play" button closed instantly:** Standalone first loads `levels\ui\ui` from `tags\`, which only exists
+  after `(Extract).bat`. Its log is `reports\debug.txt` in the tools folder: read it first when something closes silently.
+
+### Authenticity as a hash check (task 2)
+- **What:** physics values live in tags (`.vehicle`, `.physics`, `.projectile`, `.damage_effect`, `globals`). If those
+  files are byte-identical to stock, the physics are stock. `tools/stock-baseline.ps1` hashes them and compares.
+- **Frontend analogy:** a lockfile integrity hash (`package-lock.json`'s `integrity` field) for the engine's tuning data.
+- **One-liner:** "I turned 'authentic Halo physics' from a feeling into a CI-style check: SHA-256 hashes of the stock
+  physics tags, re-verified on every task."
+
+### Stock physics set the design limits (task 2)
+- **What:** one stock frag only nudges a Warthog, in Standalone and MCC alike, and the throw rate stops a player from stacking
+  grenades. With tuning ruled out (ADR 0002), stunts must come from *combining* stock forces: several explosions, ramps, momentum.
+- **Scripted force:** stock campaign scripts fire damage from script, e.g. `(damage_new "levels\a10\devices\shield charge\zapper"
+  tutorial_zapper_flag)`: a stock damage effect, set off at a cutscene flag. Task 8 uses this to stack stock frag explosions.
+- **Frontend analogy:** like a design system you may not fork: you compose the existing components instead of restyling them.
+
+### Guard the guard (task 2 review)
+- The important review finding wasn't about physics. `-Record` combined with `-TagsRoot` could have overwritten the baseline
+  with a test copy, silently disabling the check. Tools that enforce a rule need their own failure modes tested: the self-test
+  now covers a changed tag, a missing tag, a tag dropped from the list, and the refused option combination.

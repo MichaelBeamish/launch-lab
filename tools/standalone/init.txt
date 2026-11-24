@@ -1,0 +1,3 @@
+framerate_throttle 1
+cheat_infinite_ammo 1
+map_name levels\b30\b30

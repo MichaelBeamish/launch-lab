@@ -9,9 +9,10 @@ Legend: **Confirmed** (documented) · **Likely** (strong indirect evidence) · *
 
 | Feature | Status | Mechanism (no engine changes) | How we'll prove it |
 |---|---|---|---|
-| Original-engine Warthog + grenade physics | **Confirmed** | Stock `warthog` and grenade tags in H1A-EK; Standalone and MCC run the real engine | Task 2 (stock map), Task 3 (our arena) |
+| Original-engine Warthog + grenade physics | **Proven ✅ (task 2)** | Stock `warthog` and grenade tags in H1A-EK; Standalone and MCC run the real engine. Frags visibly move the Warthog, the same in both | Task 2 (stock map); Task 3 repeats it in our arena |
+| Launching a Warthog with stock grenades | **Unknown** | One frag only nudges it; the throw rate prevents stacking by hand. Stacked stock explosions via `damage_new` at cutscene flags (form used in stock `a10` scripts) | Task 8 |
 | Small custom outdoor arena | **Confirmed** | Blender → JMS → `tool structure` → lightmaps → `build-cache-file` | Task 3 |
-| Unlimited grenades | **Likely** | Option A: `cheat_infinite_ammo` (grenade coverage unknown). Option B: continuous script that tops up through `player_add_equipment` / starting profile. Option C: many respawning grenade pickups (`object_create_anew`) | Task 4 compares options |
+| Unlimited grenades | **Likely** | Option A: `cheat_infinite_ammo` (covered grenades in Standalone, task 2; MCC, from a script, untested). Option B: continuous script that tops up through `player_add_equipment` / starting profile. Option C: many respawning grenade pickups (`object_create_anew`) | Task 4 compares options |
 | Reset objects without reloading | **Confirmed** | `object_teleport` to cutscene flags, or `object_destroy` + `object_create_anew` | Task 5 |
 | Trigger: object enters zone | **Confirmed** | `volume_test_object` against a named object, polled in a `continuous` script | Task 6 |
 | Hoop detection | **Likely** | Two thin trigger volumes on each side of the hoop; a pass-through means "A then B within N ticks". The hoop is BSP geometry or scenery | Milestone 2+ |
@@ -32,7 +33,8 @@ Legend: **Confirmed** (documented) · **Likely** (strong indirect evidence) · *
 | New mechanics (e.g., direct velocity control) | **Blocker without engine changes** | No `object_set_velocity`. Approximate with invisible `damage_new` impulses (Likely) | Only if needed |
 
 ## Biggest unknowns, in the order we'll test them
-1. Does the dev loop (Standalone → MCC custom map) work on the owner's machine? (Tasks 2–3)
-2. Which unlimited-grenade method feels right without distorting stock behaviour? (Task 4)
-3. Do MCC custom singleplayer maps appear and play correctly from the menu? (Task 3)
-4. How close is OpenCE physics to our MCC baseline? (Milestone 5)
+1. Does the dev loop (Standalone → MCC custom map) work on the owner's machine? (Task 2 proved the stock half; task 3 the custom map)
+2. Do MCC custom singleplayer maps appear and play correctly from the menu? (Task 3)
+3. Can stock frags launch a Warthog when explosions are stacked? (Task 8; **MVP risk**)
+4. Which unlimited-grenade method feels right without distorting stock behaviour? (Task 4)
+5. How close is OpenCE physics to our MCC baseline? (Milestone 5)

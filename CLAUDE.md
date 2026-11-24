@@ -4,7 +4,8 @@ A physics stunt playground built as a custom **singleplayer map for Halo: Combat
 official mod tools (H1A-EK). Warthogs, endless grenades, chain reactions, challenges. The original engine's physics
 are non-negotiable.
 
-> **Status: Milestone 1 starting.** ADRs 0001–0003 are *Accepted*. Task 1 (repo + baseline commit) is done; nothing is built yet. Task #2 is next.
+> **Status: Milestone 1.** ADRs 0001–0003 are *Accepted*. Tasks 1–2 are done: the toolchain works on the owner's machine and the
+> stock physics baseline is recorded. No custom content is built yet. Task #3 (minimal arena) is next; task 8 follows it.
 
 The owner is an experienced Vue/TypeScript developer returning to engineering, and **new to Halo modding**.
 Their earlier projects with Claude are The Ink Tank (`creature-world`) and Commuting Through Time. Launch Lab uses the same
@@ -83,6 +84,7 @@ Vitest for CI-side tooling (from task 7) · Git + GitHub.
 
 | Command | Purpose | Added by |
 |---|---|---|
+| `powershell -ExecutionPolicy Bypass -File tools\stock-baseline.ps1` | Stock physics tags unchanged (ADR 0002); exit 0 = PASS | task 2 |
 | `tools\sync.ps1` | Copy `mod\` into the H1A-EK folder | task 3 |
 | `tool structure levels\launch_lab launch_lab` | Build the BSP from JMS | task 3 |
 | `tool build-cache-file levels\launch_lab\launch_lab classic` | Build the map (compiles scripts); see c20 for the flags | task 3 |

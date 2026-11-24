@@ -1,0 +1,15 @@
+{
+    "recorded":  "2026-11-23",
+    "toolsBuildId":  "11722677",
+    "algorithm":  "SHA256",
+    "tags":  {
+                 "vehicles\\warthog\\warthog.vehicle":  "c447e39a3dca2c4e4fb265f7c98c987db2e4e3bf1580a4283281fb63ba099bd0",
+                 "vehicles\\warthog\\warthog.physics":  "3c6c69c99ee5691660809e2a0ebe0f0e10ea7798a4a56b9115ef4ab31dcfb72f",
+                 "vehicles\\warthog\\warthog.model_collision_geometry":  "517139c543bb5a7cacb3c80daa5157813c53501de5289ede6f375e7569e368fb",
+                 "weapons\\frag grenade\\frag grenade.projectile":  "c8a1a8b6b01a9a6279c129b4f22e23aab2a5e84b1275dab11978cfa8aaa588e0",
+                 "weapons\\frag grenade\\explosion.damage_effect":  "40e48646a53b03df6098390a32f8a454633a226b6d8fe4a464eef6984bf94e51",
+                 "weapons\\frag grenade\\shock wave.damage_effect":  "b5268878ac036fdca63eb9f5fdc1fab2e9e23ef612ae79640f39815be1d159c6",
+                 "weapons\\frag grenade\\effects\\explosion.effect":  "dcc4c318da68ec896502282604bcdcdc198e394d4e61bd618c591ba749bb3e1d",
+                 "globals\\globals.globals":  "2f9b1409cc17c4e5f81da8e4dd5e11435670b5b7f83f4368b682bac8469fffbf"
+             }
+}

@@ -7,8 +7,9 @@ Before starting a task, run `/plan-task <n>`.
 | # | Task | Milestone | Status |
 |---|---|---|---|
 | 1 | Local repo + baseline commit | 1 | done |
-| 2 | Toolchain smoke test: Warthog launch on a stock map | 1 | todo |
+| 2 | Toolchain smoke test: Warthog vs grenades on a stock map | 1 | done |
 | 3 | Minimal custom arena with one Warthog, playable in Standalone + MCC | 1 | todo |
+| 8 | Launch experiment: stacked stock frag explosions | 1 | todo |
 | 4 | Endless grenades (compare 3 methods) | 1 | todo |
 | 5 | Reset Warthog + player | 1 | todo |
 | 6 | Landing-platform challenge + feedback | 2 | todo |
@@ -26,7 +27,9 @@ singleplayer level in `halo_tag_test.exe`, spawn a Warthog (`cheat_spawn_warthog
 in MCC with a stock level. Record the install paths in the git-ignored local config, the versions and observations.
 **Accept:**
 - Standalone loads a level and the console works.
-- A Warthog is visibly launched by grenade explosions in Standalone and in MCC.
+- Grenade explosions visibly move the Warthog, the same way in Standalone and in MCC. *(Reworded 2026-11-23 with the
+  owner's approval. The original "visibly launched" wasn't testable by hand: the throw rate prevents stacking grenades,
+  and one frag only nudges a Warthog. The launch question moved to task 8.)*
 - The tools version and MCC build are recorded in `docs/research/`.
 - Hashes of the stock `warthog` vehicle/physics tags and the frag grenade tags are recorded as our authenticity baseline.
 
@@ -37,6 +40,18 @@ a Warthog and grenade pickups → `build-cache-file`. Sources live in `mod/`, an
 - The arena builds with zero errors.
 - It loads in Standalone and in MCC (EAC off), where the owner can drive the Warthog and launch it with grenades.
 - No stock files appear in `git status`.
+
+## 8. Launch experiment: stacked stock frag explosions
+Comes after task 3 (needs our arena, for cutscene flags). Task 2 showed that one stock frag only nudges a Warthog, and
+the throw rate prevents stacking grenades by hand. A script sets off N stock frag explosions together beside the parked
+Warthog with `damage_new "weapons\frag grenade\explosion" <flag>` (the form used by stock `a10` scripts, e.g.
+`(damage_new "levels\a10\devices\shield charge\zapper" tutorial_zapper_flag)`), for N = 1, 2, 3, 4…, triggered from
+the console in Standalone. No stock tag changes (ADR 0002).
+**Accept:**
+- For each N, 3 attempts are recorded: did the Warthog leave the ground or flip, and roughly how high.
+- The smallest N that gives a visible launch is found, or "none up to N = 8" is recorded.
+- The stock-tag hash check still passes.
+- The result is written into the MVP: keep "launch with grenades" as is, or revise it with the owner.
 
 ## 4. Endless grenades
 Try `cheat_infinite_ammo`, a scripted top-up and respawning pickups. Choose one with the owner (ADR if it's notable).

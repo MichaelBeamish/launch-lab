@@ -27,3 +27,9 @@ try to land it on a raised platform, get told when I succeed, and reset in one a
 - The landing challenge fires on a real landing and **doesn't** fire on a drive-by or mid-air pass (both checked).
 - The stock physics tags are byte-identical to the extracted originals. This is checked by hash.
 - Each step has a playtest record in `docs/progress.md`.
+
+## Open risk (from task 2)
+One stock frag only **nudges** a Warthog (observed in Standalone and MCC), and the player can't throw grenades fast enough to
+stack them. Whether stock frags can produce a satisfying launch at all is **unknown**. Task 8 measures it with scripted, stacked
+stock explosions. If the answer is no, the first success criterion ("launch the Warthog using only grenades") is revisited with
+the owner, for example with ramps plus explosions or a different stock explosion, never by tuning stock tags.
