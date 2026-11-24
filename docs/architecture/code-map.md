@@ -26,6 +26,9 @@ tuning global is added, renamed or removed. A drift check will come with the CI 
 | `tools/devices.ps1` | **Gameplay devices from stock** (ADR 0005): pile gun (pistol → frag pellet → stock frag pickup) and shield gun (plasma pistol → orb pellet → stock overshield). Every change from stock listed and read back; outputs generated in the tools folder (git-ignored) |
 | `ci/` | **CI** (task 7): `src/guard.ts` (repo hygiene), `src/hsc-lint.ts` (HaloScript lint), `src/cli.ts` (runs both over `git ls-files`), `test/` (Vitest, incl. deliberately bad cases), `hsc-functions.json` (confirmed engine functions) |
 | `.github/workflows/ci.yml` | GitHub Actions: runs the CI on every push to `main` and every pull request |
+| `tools/package-mod.ps1` | Builds the Excession mod folder (`Documents\Launch Lab Workshop\LaunchLab\`: `maps\launch_lab.map` from the newest release, SHA-256 checked; `images\`) outside the repo (ADR 0006) |
+| `docs/PLAY.md` | Player guide: what to buy, what to install, subscribe, launch, troubleshooting |
+| `docs/release/workshop-upload.md` | Owner runbook: Excession set-up, the mod form, local test, upload, Workshop description |
 | `tools/mcc-swap.ps1` | `install` / `restore` / `status`: plays our map in MCC in place of a stock SP map (`a10`), with a SHA-256-checked backup |
 | `tools/local.config.ps1` | **Git-ignored.** Machine paths: mod tools folder (`ToolsRoot`) and MCC folder (`GameRoot`) |
 | `tools/stock-baseline.ps1` | Hashes the stock physics tags and compares them with the baseline (ADR 0002); `-Record` rewrites it |

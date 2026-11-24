@@ -11,13 +11,17 @@ challenges, all on the original engine's physics.
 - **Tools:** H1A-EK (Tool, Guerilla, Sapien, Standalone), Blender, HaloScript.
 - **Process:** spec-first tasks, ADRs, recorded playtests. See [`CLAUDE.md`](CLAUDE.md) and [`docs/`](docs/).
 
-## Requirements to play (once released)
-A legitimate copy of *Halo: Combat Evolved Anniversary* on Steam (it installs as part of *Halo: The Master Chief
-Collection*; the other games aren't needed), with Halo CE Campaign and Multiplayer installed, launched with anti-cheat
-disabled. This repository
-contains **no game files**: only original scripts, geometry sources, tags and documentation.
+## Play it
+**[How to play Launch Lab →](docs/PLAY.md)**: you need *Halo: Combat Evolved Anniversary* on Steam (a few dollars; it
+installs inside *Halo: The Master Chief Collection*), with the Halo CE Campaign **and** Multiplayer parts installed.
+Launch Lab will be on the **Steam Workshop** (link coming): subscribe, start MCC with "Anti-Cheat Disabled (Mods and
+Limited Services)", then Campaigns → Halo: CE → Launch Lab. This repository contains **no game files**: only original
+scripts, the world generator, tags and documentation ([ADR 0006](docs/decisions/0006-distribution-via-steam-workshop.md)).
 
 ## Legal
 Launch Lab is a non-commercial fan project. It is not affiliated with or endorsed by Microsoft, Halo Studios or Bungie.
 Halo is a trademark of the Microsoft group of companies. Game content is used under Microsoft's
 [Game Content Usage Rules](https://www.xbox.com/en-US/developers/rules).
+
+*Halo: The Master Chief Collection © Microsoft Corporation. Launch Lab was created under Microsoft's "Game Content Usage
+Rules" using assets from Halo: The Master Chief Collection, and it is not endorsed by or affiliated with Microsoft.*
