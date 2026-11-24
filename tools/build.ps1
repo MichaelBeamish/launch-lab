@@ -26,8 +26,16 @@ param(
     # For a release-quality pass use -LightmapQuality 1 -LightmapStop 0.3 (slow; overnight).
     [string]$LightmapStop = '0.9',
     # Re-run structure + lightmaps even when the geometry is unchanged.
-    [switch]$Rebuild
+    [switch]$Rebuild,
+    # Release build: better lighting (quality 0, stop 0.3: ~9 min for the 3 km world in task 10), no debug scripts
+    # (debug.hsc and the generated level teleports are left out), and a dated copy of the map with its SHA-256 saved
+    # outside the repo.
+    [switch]$Release,
+    # With -Release: the slow, best lighting (quality 1, stop 0.3). It ran 2.4 CPU-hours without finishing on the
+    # 2026-11-24 world (task 17), so only for an overnight run with sleep turned off (closing the lid pauses it).
+    [switch]$FinalLighting
 )
+if ($Release) { $LightmapQuality = $(if ($FinalLighting) { '1' } else { '0' }); $LightmapStop = '0.3'; $Rebuild = $true }
 
 $ErrorActionPreference = 'Stop'
 $ConfigFile = Join-Path $PSScriptRoot 'local.config.ps1'
@@ -61,15 +69,19 @@ function Invoke-Step($name, $exe, [string[]]$arguments, $workDir) {
     try {
         # Windows PowerShell wraps a program's stderr lines as ErrorRecords ("RemoteException"); keep only their text,
         # so the error check below sees what the program printed, not the wrapper.
+        # Each line goes to the log as soon as the program prints it, so a long step (lighting) can be watched with
+        # Get-Content build-logs\<step>.log -Wait (task 17: an 8-hour lighting pass showed nothing until the end).
+        Set-Content -LiteralPath $log -Value $null -Encoding utf8
         $output = & $exe @arguments 2>&1 | ForEach-Object {
-            if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.Exception.Message } else { "$_" }
+            $line = if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.Exception.Message } else { "$_" }
+            Add-Content -LiteralPath $log -Value $line -Encoding utf8
+            $line
         }
         $code = $LASTEXITCODE
     } finally {
         Pop-Location
         $ErrorActionPreference = 'Stop'
     }
-    $output | Set-Content -LiteralPath $log -Encoding utf8
     $errors = @($output | Where-Object { $_ -match $ErrorPattern })
     # Structure errors land next to the JMS; lightmap errors land in the tools root (seen in task 3).
     $wrlAfter = @(@(Get-ChildItem $WrlDir -Recurse -Filter *.wrl -ErrorAction SilentlyContinue) +
@@ -106,7 +118,9 @@ foreach ($s in $steps) {
     switch ($s) {
         'jms' {
             New-Item -ItemType Directory -Force (Split-Path $Jms) | Out-Null
-            Invoke-Step 'jms' $LaunchLab.Blender @('--background', '--python', (Join-Path $Repo 'art\launch_lab_arena.py'), '--', $Jms) $Repo
+            $genArgs = @('--background', '--python', (Join-Path $Repo 'art\launch_lab_arena.py'), '--', $Jms)
+            if ($Release) { $genArgs += '--release' }      # the generator leaves the debug teleports out of world.hsc
+            Invoke-Step 'jms' $LaunchLab.Blender $genArgs $Repo
         }
         'structure' {
             & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'sync.ps1') push
@@ -137,8 +151,24 @@ foreach ($s in $steps) {
             # Push scripts and tags first: when structure is skipped, nothing else has synced them.
             & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'sync.ps1') push
             if ($LASTEXITCODE -ne 0) { Write-Host "FAIL: sync push" -ForegroundColor Red; exit 1 }
+            if ($Release) {
+                # Tool compiles every .hsc in the level's scripts folder: take the debug scripts out for this build.
+                # (The next normal build's sync push puts debug.hsc back.)
+                Remove-Item -LiteralPath (Join-Path $LaunchLab.ToolsRoot 'data\levels\launch_lab\scripts\debug.hsc') -ErrorAction SilentlyContinue
+            }
             Invoke-Step 'cache' $Tool @('build-cache-file', 'levels\launch_lab\launch_lab', 'classic', 'none') $LaunchLab.ToolsRoot
         }
     }
 }
-Write-Host "Build finished: $($steps -join ', ')." -ForegroundColor Green
+if ($Release -and ($steps -contains 'cache')) {
+    # Keep a dated copy of the release map, with its SHA-256, outside the repo (ADR 0003: maps are never committed).
+    $map = Join-Path $LaunchLab.ToolsRoot 'maps\launch_lab.map'
+    $dir = Join-Path $env:LOCALAPPDATA 'LaunchLabTools\release'
+    New-Item -ItemType Directory -Force $dir | Out-Null
+    $out = Join-Path $dir ("launch_lab_{0}.map" -f (Get-Date -Format 'yyyyMMdd-HHmm'))
+    Copy-Item -LiteralPath $map -Destination $out
+    $hash = (Get-FileHash -LiteralPath $out -Algorithm SHA256).Hash.ToLowerInvariant()
+    Set-Content -LiteralPath "$out.sha256" -Value $hash -Encoding ascii
+    Write-Host "Release map: $out (SHA-256 $hash)" -ForegroundColor Green
+}
+Write-Host "Build finished: $($steps -join ', ')$(if ($Release) { ' (RELEASE)' })." -ForegroundColor Green

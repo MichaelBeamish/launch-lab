@@ -22,6 +22,10 @@ Before starting a task, run `/plan-task <n>`.
 | 5 | Reset Warthog + player | 1 | dropped |
 | 6 | Landing-platform challenge + feedback | 2 | dropped |
 | 7 | CI: repo-hygiene guard + HSC lint | 2 | done |
+| 17 | Release build: better lighting, no debug scripts, dated map + SHA-256 | 6 | done |
+| 18 | Gameplay video (owner records; shot list + a recording build with teleports) | 6 | todo |
+| 19 | 3D flythrough on the web: our generated geometry as glTF in a three.js viewer (GitHub Pages) | 6 | todo |
+| 20 | Make it playable for MCC owners: Steam Workshop via Excession (its own Campaigns entry) | 6 | todo |
 
 **Scope decision (owner, 2026-11-24): the MVP is the Sky Islands world as it stands** ("no need for portals or any of
 that other stuff, let's keep this the MVP as is"). Resolved by other means or dropped:
@@ -32,6 +36,11 @@ that other stuff, let's keep this the MVP as is"). Resolved by other means or dr
 - **13 done** in task 11. **12, 14, 15, 16 dropped**, along with Stage B (portals, waterfalls, a level-number HUD,
   ground bases): see `docs/product/map-design.md`.
 - **7 (CI)** stays for later: it needs a GitHub remote first.
+
+**Next (owner, 2026-11-24):** a gameplay video (18), a web 3D flythrough (19: our own geometry only, no Halo textures; needs
+the owner's OK for GitHub Pages and the three.js dependency), and sharing with people who own the game (20: researched in
+`docs/research/sharing-and-workshop.md`; needs Excession installed and the owner's EULA review). Browser *play* stays off
+the table (ADR 0003).
 
 ## 1. Local repo + baseline commit
 `git init` in `launch-lab`, `main` as the default branch, add `.gitignore`, then commit the kickoff docs and skills **with the owner's

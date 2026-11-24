@@ -117,3 +117,11 @@ The owner's review document. Each entry covers what it is, how we use it, and an
 - **Rule as code:** "every HaloScript function must be confirmed" became an allowlist (`ci/hsc-functions.json`): using a
   new function means confirming it with `tool script-doc` and adding it on purpose, in review.
 - **Frontend analogy:** a lint rule plus a dependency allowlist, like banning unreviewed imports.
+
+### Long builds and laptops (task 17)
+- **Sleep pauses jobs:** closing the lid suspended an overnight lighting run (6.6 h on the clock, 2.4 h of CPU).
+  Comparing CPU time with wall time shows it at once. Long runs need sleep turned off, or a desktop.
+- **Don't extrapolate a quality setting from another:** quality-1 lighting was far more than "4x the samples" of quality 0.
+  Measure once, record it, then estimate.
+- **Make long steps observable:** build logs are now written line by line, so a long step can be watched live
+  (`Get-Content build-logs\lightmaps.log -Wait`).
