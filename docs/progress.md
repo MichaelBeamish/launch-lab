@@ -2,6 +2,24 @@
 
 Newest first. One entry per verified task or significant decision.
 
+## 2026-11-23 — Task 8: stacked stock frag explosions launch the Warthog; lighter process
+- **Built:**
+  - Our first HaloScript, `launch_lab.hsc`: debug `dbg_boom_N` and `dbg_hog_reset`. Every function was confirmed with
+    `tool script-doc`.
+  - `boom_flag` (cutscene flags now managed by `tools/scenario.ps1`).
+- **Playtest (Standalone):**
+  - Console script calls need brackets.
+  - 2/2 launches: a backflip; then one hit the 30 WU ceiling. The Warthog survived both.
+- **Correction (found by inspecting stock tags):** the frag explosion `.effect` already contains the damage, so the first
+  script (effect + damage) counted each blast twice. **The launches were 8 stacked stock frags, not 4.** Fixed to
+  `effect_new` only. The smallest launching count is unmeasured; the owner judged the answer clear enough.
+- **Found for task 9:** grenade pickups are `destroyed_by_explosions`; the frag explosion `detonates_explosives`. A weapon
+  trigger can't fire equipment, but an effect part can create it.
+- **Process (owner):** a lighter process from now on, recorded in CLAUDE.md and the plan/verify skills: short plans for
+  small tasks, code review only for significant tooling changes, docs only when they change, related tasks may share a branch.
+- **Verified:** script compile (cache build OK), `check-map` OK, stock hashes PASS. Code review skipped: small script and
+  data-list change, reviewed by hand.
+
 ## 2026-11-23 — Task 3: minimal custom arena (Standalone + MCC); ADR 0004 accepted
 - **Installed (owner-approved):**
   - Blender 4.5.10 LTS (winget, installer hash verified).

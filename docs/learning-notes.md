@@ -73,3 +73,12 @@ The owner's review document. Each entry covers what it is, how we use it, and an
 ### Playing a custom singleplayer map in MCC (task 3)
 - c20 only documents a replacement method: our `.map` takes a stock map's file name (`a10.map`), and MCC with anti-cheat
   disabled loads it as *The Pillar of Autumn*. `tools/mcc-swap.ps1` backs up and restores the stock file, with hashes.
+
+### Effects are bundles, and scripts are 30 Hz batches (task 8)
+- **An effect is a bundle of parts:** damage, sound, light, particles, decals, even objects. The frag's
+  `explosion.effect` *includes* its `explosion.damage_effect`, so `effect_new` alone is a complete grenade blast. Adding
+  `damage_new` too counted it twice: check what a tag contains before combining it.
+- **Same-tick stacking:** calls inside one script invocation land in the same 1/30 s tick, so N calls = N simultaneous
+  blasts. Force from simultaneous explosions adds up; one frag nudges a Warthog, eight launch it to the ceiling.
+- **Frontend analogy:** an effect is like a component that renders its children (sound, particles, damage); and a static
+  script is a function you call from devtools (the console), with brackets: `(dbg_boom_4)`.

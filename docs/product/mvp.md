@@ -28,8 +28,8 @@ try to land it on a raised platform, get told when I succeed, and reset in one a
 - The stock physics tags are byte-identical to the extracted originals. This is checked by hash.
 - Each step has a playtest record in `docs/progress.md`.
 
-## Open risk (from task 2)
-One stock frag only **nudges** a Warthog (observed in Standalone and MCC), and the player can't throw grenades fast enough to
-stack them. Whether stock frags can produce a satisfying launch at all is **unknown**. Task 8 measures it with scripted, stacked
-stock explosions. If the answer is no, the first success criterion ("launch the Warthog using only grenades") is revisited with
-the owner, for example with ramps plus explosions or a different stock explosion, never by tuning stock tags.
+## Launch question: answered (tasks 2 and 8)
+One stock frag only **nudges** a Warthog, and the player can't throw grenades fast enough to stack them (task 2).
+**Eight simultaneous stock frag explosions launch it high** (task 8, 2/2, one hit the 30 WU ceiling). So "launch the Warthog
+using only grenades" stays, but the grenades must go off **together**: through grenade piles that chain-react (task 9) or
+level devices, not hand-throwing alone. The smallest count that launches is unmeasured.

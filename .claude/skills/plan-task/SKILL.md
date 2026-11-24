@@ -29,5 +29,6 @@ description: Turn a Launch Lab backlog task into a short implementation spec and
      flag it. Changes like that need an ADR (see the "authentic physics" rule in CLAUDE.md).
    - **Risk / size**: S/M/L, and what could go wrong.
    - **Open questions / decisions**: anything that needs the owner, such as new software, deviations from an ADR or legal questions.
-5. Keep it short. **Stop and ask for approval.** Don't write anything else.
+5. Keep it short: for a small or low-risk task, a 5–10 line plan (goal, files, approach, how we'll check it, decisions)
+   is enough. **Stop and ask for approval.** Don't write anything else.
 6. On approval, set the task's status to `planned` in the backlog.

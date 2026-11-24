@@ -9,7 +9,8 @@ Before starting a task, run `/plan-task <n>`.
 | 1 | Local repo + baseline commit | 1 | done |
 | 2 | Toolchain smoke test: Warthog vs grenades on a stock map | 1 | done |
 | 3 | Minimal custom arena with one Warthog, playable in Standalone + MCC | 1 | done |
-| 8 | Launch experiment: stacked stock frag explosions | 1 | todo |
+| 8 | Launch experiment: stacked stock frag explosions | 1 | done |
+| 9 | Grenade pile gun: shots drop stock frag pickups that chain-react | 1 | todo |
 | 4 | Endless grenades (compare 3 methods) | 1 | todo |
 | 5 | Reset Warthog + player | 1 | todo |
 | 6 | Landing-platform challenge + feedback | 2 | todo |
@@ -48,10 +49,22 @@ Warthog with `damage_new "weapons\frag grenade\explosion" <flag>` (the form used
 `(damage_new "levels\a10\devices\shield charge\zapper" tutorial_zapper_flag)`), for N = 1, 2, 3, 4…, triggered from
 the console in Standalone. No stock tag changes (ADR 0002).
 **Accept:**
-- For each N, 3 attempts are recorded: did the Warthog leave the ground or flip, and roughly how high.
+- For each N tested, 3 attempts are recorded: did the Warthog leave the ground or flip, and roughly how high.
+  *(Adaptive search with the owner's approval, 2026-11-23: start at N = 4, then go down (2, 3) or up (6, 8).)*
 - The smallest N that gives a visible launch is found, or "none up to N = 8" is recorded.
 - The stock-tag hash check still passes.
 - The result is written into the MVP: keep "launch with grenades" as is, or revise it with the owner.
+
+## 9. Grenade pile gun (owner's idea, 2026-11-23)
+A gun the player spawns with. Each shot drops a **stock** frag grenade pickup where it hits, without exploding. Stock data
+says pickups are `destroyed_by_explosions` (0.4–0.8 s delay) and the frag explosion `detonates_explosives`, so piles should
+chain-react. A trigger can't fire equipment ("equipment tags cannot be referenced here"), so the chain is: gun (copy of the
+stock pistol) → pellet (copy of the pistol bullet, no damage) → impact effect (ours) whose one part creates the stock
+`frag grenade.equipment`. The tags are built as code from stock with `invader-edit` (ADR 0005).
+**Accept:**
+- You spawn with the gun; shots leave grenade pickups on the floor.
+- One thrown grenade sets off a pile, which cascades.
+- The stock hash check passes; `check-map` and the cache build are clean.
 
 ## 4. Endless grenades
 Try `cheat_infinite_ammo`, a scripted top-up and respawning pickups. Choose one with the owner (ADR if it's notable).

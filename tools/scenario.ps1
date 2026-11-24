@@ -3,7 +3,7 @@
   Applies Launch Lab's scenario placements (spawn, vehicles, equipment, object names) with invader-edit (ADR 0004).
 
 .DESCRIPTION
-  The placement list below is the source of truth. The script:
+  The placement list below (spawns, vehicles, equipment, cutscene flags) is the source of truth. The script:
     1. syncs the repo into the tools folder (tools\sync.ps1 push; refuses if there is unpulled Sapien/Guerilla work),
     2. clears the placement blocks and writes them again from the list (so re-running never duplicates anything),
     3. reads every value back and compares it,
@@ -35,6 +35,10 @@ $Equipment = @(
     @{ Type = 0; Position = @(2, -17, 0.2) }
     @{ Type = 0; Position = @(3, -17, 0.2) }
     @{ Type = 0; Position = @(4, -17, 0.2) }
+)
+# Cutscene flags: named points that scripts target (damage_new, effect_new, object_teleport).
+$CutsceneFlags = @(
+    @{ Name = 'boom_flag'; Position = @(0, -15, 0.1) }     # on the floor under the Warthog's centre (task 8)
 )
 # --------------------------------------------------------------------------------------------------------
 
@@ -103,7 +107,7 @@ foreach ($b in 'scenery', 'bipeds', 'weapons', 'machines', 'controls', 'light_fi
 }
 
 # 2. Clear placement blocks. Instances first, then palettes and names (instances point at them by index).
-Clear-Block 'equipment'; Clear-Block 'vehicles'; Clear-Block 'player_starting_locations'
+Clear-Block 'equipment'; Clear-Block 'vehicles'; Clear-Block 'player_starting_locations'; Clear-Block 'cutscene_flags'
 Clear-Block 'equipment_palette'; Clear-Block 'vehicle_palette'
 Clear-Block 'object_names' -NoSafeguards   # guarded by invader-edit; -n only here (ADR 0004)
 
@@ -115,6 +119,15 @@ if ($Names.Count) {
         Edit-Tag @('-S', "object_names[$i].name", $Names[$i]) -NoSafeguards
         $Expect["object_names[$i].name"] = $Names[$i]
     }
+}
+
+if ($CutsceneFlags.Count) { Edit-Tag @('-I', 'cutscene_flags', "$($CutsceneFlags.Count)", 'end') }
+for ($i = 0; $i -lt $CutsceneFlags.Count; $i++) {
+    $f = $CutsceneFlags[$i]
+    Edit-Tag @('-S', "cutscene_flags[$i].name", $f.Name)
+    Edit-Tag @('-S', "cutscene_flags[$i].position", (Format-Point $f.Position))
+    $Expect["cutscene_flags[$i].name"] = $f.Name
+    $Expect["cutscene_flags[$i].position"] = $f.Position
 }
 
 if ($PlayerStarts.Count) { Edit-Tag @('-I', 'player_starting_locations', "$($PlayerStarts.Count)", 'end') }

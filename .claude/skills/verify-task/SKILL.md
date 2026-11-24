@@ -19,7 +19,8 @@ description: Verify an implemented Launch Lab task against its acceptance criter
    the spec and ADRs approved.
 6. Check `git status`/`git diff` for stray changes: stock tags, `.map` files, tool output, local paths.
 7. **Review the diff:**
-   - Run `/code-review` on the branch changes (default level; never `max`/`ultra` unless the owner asks).
+   - Run `/code-review` (default level; never `max`/`ultra` unless the owner asks) when the change adds or significantly
+     changes repo tooling or scripts; otherwise state "code review skipped: <reason>" (lighter process, 2026-11-23).
      It covers scripts and tooling; binary tags are covered by step 5.
    - Run `/security-review` if the change touches repo tooling that handles files, paths, downloads or
      dependencies. Otherwise state "security review not needed: <reason>".

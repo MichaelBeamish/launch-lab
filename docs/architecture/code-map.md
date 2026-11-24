@@ -16,7 +16,8 @@ tuning global is added, renamed or removed. A drift check will come with the CI 
 | `art/launch_lab_arena.py` | **Arena geometry as code** (Blender script): sealed shell on one grid, `+sky` walls/ceiling, ramp, platform, UVs; exports the JMS |
 | `mod/tags/levels/launch_lab/launch_lab.scenario` | Our scenario (committed): type singleplayer, sky `sky_timberland` (set in Guerilla), placements from `tools/scenario.ps1` |
 | `mod/data/levels/launch_lab/models/launch_lab.JMS` | **Generated, git-ignored**: exported by the arena script |
-| `tools/scenario.ps1` | **Placements as code** (ADR 0004): spawn, vehicles, equipment, object names via `invader-edit`; read-back + `check-map` |
+| `tools/scenario.ps1` | **Placements as code** (ADR 0004): spawn, vehicles, equipment, cutscene flags, object names via `invader-edit`; read-back + `check-map` |
+| `mod/data/levels/launch_lab/scripts/launch_lab.hsc` | Level HaloScript. Debug-only `dbg_` scripts: `(dbg_boom_1..8)` stacked stock frag explosions at `boom_flag`, `(dbg_hog_reset)` |
 | `tools/build.ps1` | Build steps `jms`, `structure`, `lightmaps`, `cache` (or `all`); fails on error lines or a new `.wrl`; logs in `build-logs/` (ignored) |
 | `tools/sync.ps1` | `push` repo → tools folder; `pull` the `.scenario` back after a GUI edit. Refuses to push over unpulled GUI work |
 | `tools/mcc-swap.ps1` | `install` / `restore` / `status`: plays our map in MCC in place of a stock SP map (`a10`), with a SHA-256-checked backup |
@@ -33,6 +34,7 @@ tuning global is added, renamed or removed. A drift check will come with the CI 
 | `hog` | Stock Warthog (`vehicles\warthog\warthog.vehicle`) | (0, −15, 0.5), yaw 90° (up the ramp) | `tools/scenario.ps1` |
 | *(unnamed)* | Player start | (0, −17, 0.5), facing 90° | `tools/scenario.ps1` |
 | *(unnamed)* ×3 | Frag grenade pickups | (2..4, −17, 0.2) | `tools/scenario.ps1` |
+| `boom_flag` | Cutscene flag under the Warthog (task 8 debug explosions) | (0, −15, 0.1) | `tools/scenario.ps1` |
 
 Arena layout (`art/launch_lab_arena.py`): 40 × 40 WU, ceiling 30 WU; ramp x −3..3, y −12 → 0, top 3 WU; platform x −5..5,
 y 8..16, 4 WU high (not reachable by driving; the launch target).

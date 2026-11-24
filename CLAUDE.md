@@ -27,14 +27,17 @@ way of working. **Never modify those repositories.**
 - `docs/tasks/backlog.md`, `docs/decisions/`
 
 ## Working rules
-1. **Plan before building.** Every task gets a `/plan-task` spec approved by the owner first.
+1. **Plan before building.** Every task gets a plan approved by the owner first. *Lighter process (owner, 2026-11-23):*
+   small or low-risk tasks get a short plan (5–10 lines); the full `/plan-task` spec is for large or risky tasks.
 2. **One task at a time.** Small, independently verifiable increments. No drive-by features or refactors.
+   Closely related small tasks may share one branch and one checkpoint.
 3. **Ask before major decisions.** New software, architecture changes, deviations from an ADR or legal questions: discuss first, then `/adr`.
 4. **Verify before done.** Gameplay is verified only by a recorded playtest (`docs/testing/playtest.md`).
    **Never claim a gameplay feature works because the script looks right.**
 5. **No commits without the owner's explicit approval. Nothing is pushed without it. Only the owner merges.**
    Never install software, and never touch other repositories, without approval.
-6. **Keep docs current:** progress, backlog, feasibility matrix, code map and README on every task.
+6. **Keep docs current:** backlog and progress on every task; feasibility matrix, code map, README and learning notes
+   when something in them actually changes.
 7. **Verify before you reference.** Every HaloScript function, tag field and Tool command must be confirmed in the installed
    tools, the extracted stock scripts or a cited source (c20, Microsoft Learn), never from memory. Functions differ between
    Halo CE versions; we target **H1A (MCC)**.
