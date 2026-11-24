@@ -2,6 +2,22 @@
 
 Newest first. One entry per verified task or significant decision.
 
+## 2026-11-24 — Task 17: release build
+- **Built:**
+  - `tools\build.ps1 -Release`: rebuilds the BSP and lighting (quality 0, stop 0.3) and leaves out the debug scripts
+    (`debug.hsc`, split out of `launch_lab.hsc`, and the generated level teleports).
+  - It saves a dated map plus its SHA-256 in `%LOCALAPPDATA%\LaunchLabTools\release\` (outside the repo, ADR 0003).
+  - Build logs are now written live.
+- **Result:** release build in **5.0 min**; 3 script files compiled (no debug); 0 debug teleports; 6.38 MiB tags;
+  stock hashes PASS. Release map `launch_lab_20261124-0745.map`, SHA-256 `7eb6e507…315ccbf0`.
+- **Learned: quality-1 lighting is far slower than estimated.** It ran overnight: 6.6 h on the clock but only 2.4 h of
+  CPU (closing the laptop lid sleeps the PC, which pauses the job), and it hadn't finished. The estimate (45–60 min,
+  scaled from task 10's quality-0 run) was wrong; it was stopped by agreement. Quality 1 is now an opt-in
+  `-FinalLighting` for an overnight run with sleep turned off.
+- **Research for task 20:** `docs/research/sharing-and-workshop.md`. Microsoft's Excession uploads Halo CE campaign maps
+  to the Steam Workshop; players get the map in MCC's Campaigns menu (anti-cheat off). Terms: non-commercial, retail
+  assets only, a Game Content Usage Rules notice; one tension in the EULA wording ("Modded Versions"), noted.
+
 ## 2026-11-24 — Task 7: GitHub repository and CI
 - **GitHub (owner-approved):** public repository https://github.com/MichaelBeamish/launch-lab (no "Halo" in the name).
   The full history was audited first: no local paths or personal email, no game or binary files in any commit.
