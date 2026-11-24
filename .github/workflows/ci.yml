@@ -1,0 +1,33 @@
+# Launch Lab CI (task 7): what can be checked without the game or the Windows-only mod tools.
+# Gameplay is verified by the owner's playtests (docs/testing/playtest.md); this guards the repo and the scripts.
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ci/package-lock.json
+      - run: npm ci
+      - name: Type check (strict TypeScript)
+        run: npm run typecheck
+      - name: Unit tests (including deliberately bad cases)
+        run: npm test
+      - name: Repo guard + HaloScript lint
+        run: npm run guard
+      - name: World generator compiles (syntax only; it needs Blender to run)
+        run: python3 -m py_compile ../art/launch_lab_arena.py

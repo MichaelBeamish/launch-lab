@@ -21,7 +21,7 @@ Before starting a task, run `/plan-task <n>`.
 | 4 | Endless grenades (compare 3 methods) | 1 | done |
 | 5 | Reset Warthog + player | 1 | dropped |
 | 6 | Landing-platform challenge + feedback | 2 | dropped |
-| 7 | CI: repo-hygiene guard + HSC lint | 2 | todo |
+| 7 | CI: repo-hygiene guard + HSC lint | 2 | done |
 
 **Scope decision (owner, 2026-11-24): the MVP is the Sky Islands world as it stands** ("no need for portals or any of
 that other stuff, let's keep this the MVP as is"). Resolved by other means or dropped:

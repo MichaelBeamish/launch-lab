@@ -1,0 +1,17 @@
+{
+  "name": "launch-lab-ci",
+  "private": true,
+  "description": "Launch Lab CI: repo-hygiene guard and HaloScript lint (task 7). Runs on GitHub Actions; no game data needed.",
+  "type": "module",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "guard": "node src/cli.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
