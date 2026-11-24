@@ -4,8 +4,9 @@ A physics stunt playground built as a custom **singleplayer map for Halo: Combat
 official mod tools (H1A-EK). Warthogs, endless grenades, chain reactions, challenges. The original engine's physics
 are non-negotiable.
 
-> **Status: Milestone 1.** ADRs 0001–0004 are *Accepted*. Tasks 1–3 are done: our minimal arena (ramp, platform, Warthog,
-> frag pickups) builds with zero errors and plays in Standalone and MCC. Task #8 (stacked-explosion launch) is next.
+> **Status: MVP done.** ADRs 0001–0005 are *Accepted*. The Sky Islands world (task 11) is the MVP: a generated 3 km world,
+> 10-level climb, themed islands, a castle summit, checkpoints, the pile and shield guns, unlimited ammo, played in MCC.
+> Next options: a release build, GitHub + CI (task 7), the portfolio write-up and video.
 
 The owner is an experienced Vue/TypeScript developer returning to engineering, and **new to Halo modding**.
 Their earlier projects with Claude are The Ink Tank (`creature-world`) and Commuting Through Time. Launch Lab uses the same
@@ -91,7 +92,7 @@ Vitest for CI-side tooling (from task 7) · Git + GitHub.
 | Command | Purpose | Added by |
 |---|---|---|
 | `powershell -ExecutionPolicy Bypass -File tools\stock-baseline.ps1` | Stock physics tags unchanged (ADR 0002); exit 0 = PASS | task 2 |
-| `powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Step all` | Geometry (Blender) → `tool structure` → `tool lightmaps` → `tool build-cache-file … classic none`; fails on any error line or new `.wrl` | task 3 |
+| `powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Step all` | World generator (Blender) → devices → `tool structure` + `tool lightmaps` (skipped if the geometry is unchanged) → placements → `tool build-cache-file … classic none`; fails on any error line or new `.wrl` | tasks 3, 11 |
 | `powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Step devices` | Build gameplay devices (pile gun, shield gun) from stock tags (ADR 0005); ends with the stock hash check | task 9 |
 | `powershell -ExecutionPolicy Bypass -File tools\scenario.ps1` | Apply placements (ADR 0004); read-back + `tool check-map` | task 3 |
 | `powershell -ExecutionPolicy Bypass -File tools\sync.ps1 push\|pull` | Repo ↔ tools folder (`pull` after any Sapien/Guerilla save) | task 3 |

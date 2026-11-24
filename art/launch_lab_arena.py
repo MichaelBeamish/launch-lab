@@ -55,10 +55,23 @@ MESAS = [  # (x, y, height, radius, edge width): flat-topped plateaus with steep
 # (owner: "the gap between levels should vary"). Layouts: solo, cluster2/cluster3 (islands linked by bridges),
 # summit (the top, with a pool). Level 1 is lower than the old lowest island (owner).
 LEVELS = [
-    (1, 22.0, "solo"), (2, 48.0, "cluster2"), (3, 70.0, "solo"), (4, 110.0, "cluster3"), (5, 150.0, "solo"),
-    (6, 215.0, "cluster2"), (7, 285.0, "pool"), (8, 360.0, "cluster3"), (9, 455.0, "solo"),
-    (10, 565.0, "cluster2"), (11, 690.0, "solo"), (12, 820.0, "cluster2"), (13, 930.0, "summit"),
+    # (level, top height, layout, hop, theme). hop = horizontal gap (edge to edge) from the previous level's main
+    # island. Owner playtest (2026-11-24): "height isn't necessarily what is hard; what's difficult is distance".
+    # Stage A's hops ran 35-76 WU for levels 2-5 and 113-124 for 6-7 (manageable), 155+ from level 8 (stuck). So hops
+    # grow from 30 to a cap of 115 WU by level 6 and then stay; above that only the rises grow. 10 levels, summit at
+    # about two thirds of stage A's height (owner).
+    (1, 20.0, "solo", 0.0, "grove"),
+    (2, 42.0, "cluster2", 30.0, "ruins"),
+    (3, 66.0, "pool", 45.0, "pool"),
+    (4, 95.0, "cluster3", 65.0, "crash"),
+    (5, 130.0, "solo", 90.0, "pad"),
+    (6, 180.0, "cluster2", 115.0, "spires"),
+    (7, 245.0, "solo", 115.0, "ruins"),
+    (8, 330.0, "cluster2", 115.0, "crash"),
+    (9, 440.0, "solo", 115.0, "grove"),
+    (10, 620.0, "summit", 115.0, "castle"),
 ]
+MEMBER_THEMES = ["grove", "spires", "pad", "crash"]   # themes for the extra islands of a cluster, in turn
 SUMMIT_R = 40.0        # the summit island's radius (the castle stands on its flat middle)
 CASTLE_S = 13.0        # half the castle's width (square), centred on the summit
 ISLAND_POINTS = 24     # points around an island's outline (smooth-shaded, so 24 reads as round)
@@ -323,7 +336,7 @@ def natural_island(group, isl, faces, notches=()):
         faces.append(("water_%s" % group, MAT_WATER, ring(0.45, [wz] * n)))
 
     # Places to put things: points of the inner top rings (exact surface heights). Skip the basin if there's a pool.
-    usable = top_rings[1:3] if pool else top_rings[0:2]
+    usable = top_rings[1:3] if pool else (top_rings[2:3] if isl.get("flat") else top_rings[0:2])
     spots = [p for rg in usable for p in rg]
     top_max = max(p[2] for rg in top_rings for p in rg)
     return dict(spots=spots, edge=top_rings[-1], top_max=top_max, centre_top=centre)
@@ -413,6 +426,64 @@ def build_castle(cx, cy, top, faces):
     return tops, towers, (cx, cy - S - 6.0, z0)            # walkable tops, tower tops, the gate approach
 
 
+WRECK_CLEAR = 9.0      # keep trees and the Warthog this far from a wreck's centre (a crashed Pelican is long)
+FLAT_THEMES = ("ruins", "pad", "spires", "castle", "crash")   # crash: wrecks need flat ground (review)
+
+
+def tapered_prism(group, mat, cx, cy, r0, r1, sides_n, z0, z1, faces, rot=0.0):
+    """A closed upright prism that narrows from radius r0 at the bottom to r1 at the top (a rock spire)."""
+    a = [2 * math.pi * k / sides_n + rot for k in range(sides_n)]
+    lo = [(cx + r0 * math.cos(t), cy + r0 * math.sin(t), z0) for t in a]
+    hi = [(cx + r1 * math.cos(t), cy + r1 * math.sin(t), z1) for t in a]
+    faces.append((group, mat, hi))
+    faces.append((group, mat, list(reversed(lo))))
+    for k in range(sides_n):
+        k2 = (k + 1) % sides_n
+        faces.append((group, mat, [lo[k], lo[k2], hi[k2], hi[k]]))
+
+
+def build_theme(group, isl, faces, rng):
+    """Give an island its character (owner: "a little more diversity to each island in between"). Structures are
+    closed solids on the island's flat plaza, 0.02 WU above it, with gaps between parts (solids must not touch); a
+    pattern is scaled down to fit smaller islands. Returns (walkable structure tops for landing zones, scatter).
+    Themes: ruins (broken Forerunner walls, column stumps, a watchtower), pad (a landing pad with beacons),
+    spires (tall rock spires), crash (a stock wreck), grove (dense trees), pool / castle (built elsewhere)."""
+    theme, cx, cy, top, r = isl["theme"], isl["cx"], isl["cy"], isl["top"], isl["r"]
+    z0 = top + 0.02
+    sc = min(1.0, 0.7 * 0.82 * r / 8.0)        # the pattern spans ~8 WU from the centre; keep it on the plaza
+    tops, scatter = [], []
+    g = group.replace("island", "theme")
+    if theme == "ruins":
+        for k, (x0, y0, x1, y1, h) in enumerate([(-7, 2.5, -1, 3.5, 4.5), (3.5, -4.5, 4.5, 0.5, 3.0), (-3, -5.5, 1, -4.5, 2.0)]):
+            box_solid("%s_wall_%d" % (g, k), MAT_CASTLE_WALL, cx + x0 * sc, cy + y0 * sc, z0,
+                      cx + x1 * sc, cy + y1 * sc, z0 + h, faces, MAT_CASTLE_FLOOR)
+            tops.append((cx + x0 * sc, cy + y0 * sc, cx + x1 * sc, cy + y1 * sc, z0 + h))
+        for k, (x, y, h) in enumerate([(3, 4, 4.0), (5.5, 4, 2.5), (-5.5, -1, 3.5), (-5.5, 1.2, 1.5)]):
+            prism_solid("%s_column_%d" % (g, k), MAT_CASTLE_TOWER, cx + x * sc, cy + y * sc, 0.6, 8, z0, z0 + h, faces)
+            tops.append((cx + x * sc - 0.6, cy + y * sc - 0.6, cx + x * sc + 0.6, cy + y * sc + 0.6, z0 + h))   # review
+        th = 12.0                                  # the watchtower, in the middle
+        prism_solid("%s_tower" % g, MAT_CASTLE_TOWER, cx, cy, 2.5 * sc, 8, z0, z0 + th, faces, MAT_CASTLE_FLOOR)
+        tops.append((cx - 2.5 * sc, cy - 2.5 * sc, cx + 2.5 * sc, cy + 2.5 * sc, z0 + th))
+    elif theme == "pad":
+        h = 4.0 * sc
+        box_solid("%s_pad" % g, MAT_CASTLE_FLOOR, cx - h, cy - h, z0, cx + h, cy + h, z0 + 0.25, faces)
+        tops.append((cx - h, cy - h, cx + h, cy + h, z0 + 0.25))
+        for sx, sy in ((1, 1), (1, -1), (-1, 1), (-1, -1)):
+            scatter.append(dict(kind="beacon", position=[cx + sx * (h + 0.8), cy + sy * (h + 0.8), top]))
+    elif theme == "spires":
+        for k, (x, y) in enumerate([(0, 0), (4.5, 2), (-3.5, 3.5), (-2, -4.5), (4, -3.5)]):
+            hgt = rng.uniform(6.0, 14.0)
+            tapered_prism("%s_spire_%d" % (g, k), MAT_ROCK, cx + x * sc, cy + y * sc, rng.uniform(1.2, 1.8) * sc,
+                          rng.uniform(0.2, 0.4), 7, z0, z0 + hgt, faces, rng.uniform(0, 1))
+            tops.append((cx + x * sc - 0.5, cy + y * sc - 0.5, cx + x * sc + 0.5, cy + y * sc + 0.5, z0 + hgt))   # review
+    elif theme == "crash":
+        scatter.append(dict(kind=rng.choice(["wreck_pelican", "wreck_dropship", "wreck_banshee", "wreck_lifepod"]),
+                            position=[cx, cy, top + 0.1], clear=WRECK_CLEAR))
+        # A landing zone over the wreck: you can climb onto it, and the fall guard must not count stepping off as a fall.
+        tops.append((cx - WRECK_CLEAR, cy - WRECK_CLEAR, cx + WRECK_CLEAR, cy + WRECK_CLEAR, top + 6.0))
+    return tops, scatter
+
+
 def edge_point_towards(meta, tx, ty, top):
     """Where a bridge leaves an island towards (tx, ty): past the furthest edge point within the notch (measured
     along the bridge direction, so no part of the outline sticks out beyond the deck's end), at the island's top
@@ -428,25 +499,54 @@ def edge_point_towards(meta, tx, ty, top):
     return (cx + ux * reach, cy + uy * reach, top)
 
 
+def overlaps_earlier(cx, cy, r, top, thick, placed):
+    """True if this island's footprint overlaps an earlier island it doesn't clear vertically by 8 WU (review: the
+    walk only checked the previous level, so a turn could bring the climb back over an earlier island)."""
+    for px, py, pr, ptop, pthick in placed:
+        if math.hypot(cx - px, cy - py) < (r + pr) * 1.25 + 4.0:
+            if not (top - thick > ptop + 8.0 or ptop - pthick > top + 8.0):
+                return True
+    return False
+
+
 def build_islands(faces, layout):
+    """Lay out the climb: each level's main island sits `hop` WU (edge to edge) from the previous level's main island,
+    in a new direction each time, turning back towards the middle near the walls."""
     rng = random.Random(WORLD_SEED)
-    angle = rng.uniform(0, 2 * math.pi)
-    for level, z, kind in LEVELS:
-        # The climb spirals around the world, moving outwards as it rises.
-        angle += rng.uniform(0.7, 1.3)
-        dist = 70.0 + 220.0 * (level / len(LEVELS)) + rng.uniform(-20, 20)
-        lx, ly = math.cos(angle) * dist, math.sin(angle) * dist
+    heading = rng.uniform(0, 2 * math.pi)
+    prev = None
+    placed = []          # (cx, cy, r, top, thick) of every island so far
+    for level, z, kind, hop, theme0 in LEVELS:
+        r_main = SUMMIT_R if kind == "summit" else 16.0 if kind == "pool" else rng.uniform(12, 15)
+        if prev is None:
+            lx, ly = math.cos(heading) * 60.0, math.sin(heading) * 60.0
+        else:
+            heading += rng.choice((-1, 1)) * rng.uniform(0.6, 1.2)
+            for _ in range(24):
+                d = hop + prev[2] + r_main
+                lx, ly = prev[0] + math.cos(heading) * d, prev[1] + math.sin(heading) * d
+                if max(abs(lx), abs(ly)) < 420.0 - r_main and not overlaps_earlier(lx, ly, r_main, z, r_main * 1.6, placed):
+                    break
+                heading += 0.5                    # too close to a wall: keep turning until it fits
+            else:
+                raise RuntimeError("level %d: no room for a %.0f WU hop" % (level, hop))
+        prev = (lx, ly, r_main)
         count = {"solo": 1, "pool": 1, "cluster2": 2, "cluster3": 3, "summit": 1}[kind]
         plans = []
         for m in range(count):
             if m == 0:
                 cx, cy, tz = lx, ly, z
             else:
-                a2 = angle + rng.uniform(1.2, 2.2) * (1 if m == 1 else -1)
-                gap = rng.uniform(32, 42)
-                cx, cy, tz = lx + math.cos(a2) * gap, ly + math.sin(a2) * gap, z + rng.uniform(-4, 4)
+                for _ in range(24):
+                    a2 = heading + rng.uniform(1.2, 2.2) * (1 if m == 1 else -1)
+                    gap = rng.uniform(32, 42)
+                    cx, cy, tz = lx + math.cos(a2) * gap, ly + math.sin(a2) * gap, z + rng.uniform(-4, 4)
+                    if not overlaps_earlier(cx, cy, 11.0, tz, 11.0 * 1.6, placed + [(p["cx"], p["cy"], p["r"], p["top"], p["thick"]) for p in plans]):
+                        break
+                else:
+                    raise RuntimeError("level %d: no room for cluster island %d" % (level, m))
             # Summit: much bigger, for the castle (owner: "much bigger and have some really cool stuff on it").
-            r = SUMMIT_R if kind == "summit" else 16.0 if kind == "pool" else (rng.uniform(12, 15) if m == 0 else rng.uniform(8, 11))
+            r = r_main if m == 0 else rng.uniform(8, 11)
             # The underside must stay clear of the ground below it (solids must not touch): sample the terrain under
             # the island's footprint and keep the tip at least 3 WU above the highest point.
             ground = max(terrain_height(cx + math.cos(t) * rr, cy + math.sin(t) * rr)
@@ -454,8 +554,10 @@ def build_islands(faces, layout):
             thick = min(r * (0.9 if kind == "summit" else rng.uniform(1.2, 1.6)), tz - ground - 3.0)
             if thick < 5.0:
                 raise RuntimeError("level %d island %d is too close to the ground (top %.1f, ground %.1f)" % (level, m, tz, ground))
-            plans.append(dict(cx=cx, cy=cy, top=tz, r=r, thick=thick, seed=level * 10 + m,
-                              pool=1.6 if kind == "pool" else 0.0, flat=kind == "summit"))
+            theme = theme0 if m == 0 else MEMBER_THEMES[(level + m) % len(MEMBER_THEMES)]
+            plans.append(dict(cx=cx, cy=cy, top=tz, r=r, thick=thick, seed=level * 10 + m, theme=theme,
+                              pool=1.6 if kind == "pool" else 0.0, flat=theme in FLAT_THEMES))
+        placed += [(p["cx"], p["cy"], p["r"], p["top"], p["thick"]) for p in plans]
         # Bridges run from the main island (0) to each other island: notch both ends.
         notches = [[] for _ in plans]
         for m in range(1, count):
@@ -466,6 +568,8 @@ def build_islands(faces, layout):
         for m, isl in enumerate(plans):
             group = "island_%d_%d" % (level, m)
             meta = natural_island(group, isl, faces, notches[m])
+            meta["theme"] = isl["theme"]
+            meta["structure_tops"], meta["theme_scatter"] = build_theme(group, isl, faces, rng)
             islands.append(dict(group=group, isl=isl, meta=meta))
         bridges = []
         for m in range(1, count):
@@ -489,7 +593,11 @@ def build_islands(faces, layout):
             zone = dict(name="level_%d_zone_%d" % (level, k), corner=[isl["cx"] - pad, isl["cy"] - pad, lo],
                         size=[2 * pad, 2 * pad, meta["top_max"] + 1.5 - lo])
             lv["islands"].append(dict(centre=[isl["cx"], isl["cy"], isl["top"]], r=isl["r"], zone=zone,
-                                      spots=[list(p) for p in meta["spots"]]))
+                                      spots=[list(p) for p in meta["spots"]], theme=meta["theme"],
+                                      theme_scatter=meta["theme_scatter"], structure_tops=meta["structure_tops"]))
+            for t, (x0, y0, x1, y1, zt) in enumerate(meta["structure_tops"]):
+                lv.setdefault("bridge_zones", []).append(dict(name="level_%d_%d_structure_zone_%d" % (level, k, t),
+                                                              corner=[x0 - 0.5, y0 - 0.5, zt - 1.0], size=[x1 - x0 + 1.0, y1 - y0 + 1.0, 2.5]))
         for k, br in enumerate(bridges):
             xs_ = [br["a"][0], br["b"][0]]
             ys_ = [br["a"][1], br["b"][1]]
@@ -506,63 +614,85 @@ def build_islands(faces, layout):
 
 
 # ---- Layout, placements and scripts --------------------------------------------------------------------------------
-SCATTER_ISLAND = ["tree_leafy", "tree_gnarled", "tree_dense", "pine", "boulder_moss", "boulder_moss", "fern",
-                  "broadleaf", "yellowbig", "trunk"]
-SCATTER_GROUND = ["tree_leafy", "tree_gnarled", "tree_dense", "pine", "pine", "boulder_moss_large", "boulder_granite",
-                  "boulder", "fern", "broadleaf"]
+# (tree_gnarled_doublewide is left out: its stock collision_model is empty, so it isn't solid: owner playtest.)
+SCATTER_ISLAND = ["tree_leafy", "tree_dense", "pine", "boulder_moss", "boulder_moss", "fern", "broadleaf",
+                  "yellowbig", "trunk"]
+SCATTER_GROUND = ["tree_leafy", "tree_dense", "pine", "pine", "boulder_moss_large", "boulder_granite", "boulder",
+                  "fern", "broadleaf"]
 
 
 def plan_placements(layout):
-    """A vehicle on every island (owner), trees and rocks on islands and the ground. Nothing is placed within
-    CLEAR of a vehicle or within SPACING of another item (task 11: a turret appeared inside a tree)."""
+    """One Warthog per connected group of islands (owner: a cluster of bridged islands is one group; no turrets), plus
+    trees and rocks. Fewer than stage A (owner: lag with big grenade piles): islands get a few each (groves more), and
+    the ground gets trees only near the start and under the lower levels. Nothing within CLEAR of a vehicle or
+    SPACING of another item (stage A: a turret appeared inside a tree)."""
     CLEAR, SPACING = 5.0, 3.0
     rng = random.Random(WORLD_SEED + 1)
     scatter, vehicles, taken = [], [], []
 
     def free(p, d):
-        return all(math.hypot(p[0] - q[0], p[1] - q[1]) >= d or abs(p[2] - q[2]) > 6 for q in taken)
+        return all(math.hypot(p[0] - q[0], p[1] - q[1]) >= max(q[3], d) or abs(p[2] - q[2]) > 6 for q in taken)
 
     for lv in layout["levels"]:
         castle = lv.get("castle")
-        for k, isl in enumerate(lv["islands"]):
-            cx, cy = isl["centre"][0], isl["centre"][1]
-            spots = list(isl["spots"])
-            if castle:   # keep the castle's footprint clear
-                spots = [p for p in spots if max(abs(p[0] - cx), abs(p[1] - cy)) > castle["half"] + 4.0]
+        main = lv["islands"][0]
+        cx, cy = main["centre"][0], main["centre"][1]
+        for isl in lv["islands"]:          # theme items first, so the Warthog keeps clear of wrecks (review)
+            for item in isl.get("theme_scatter", []):
+                scatter.append(item)
+                taken.append((item["position"][0], item["position"][1], item["position"][2], item.get("clear", 3.0)))
+        if castle:
+            vx, vy, vz = castle["gate"]
+        else:
+            spots = list(main["spots"])
             rng.shuffle(spots)
-            # Warthogs on the bigger islands (alternating), Covenant gun turrets ("Shades") on the rest.
-            kind = "warthog" if (isl["r"] >= 12 and (lv["level"] + k) % 2 == 1) else "turret"
+            vx, vy, vz = next((p for p in spots if free(p, CLEAR)), spots[0])
+        vehicles.append(dict(level=lv["level"], kind="warthog", position=[vx, vy, vz + 0.5],
+                             yaw=math.degrees(math.atan2(vy - cy, vx - cx)) + 90.0))
+        taken.append((vx, vy, vz, CLEAR))
+        for isl in lv["islands"]:
+            icx, icy = isl["centre"][0], isl["centre"][1]
+            spots = list(isl["spots"])
             if castle:
-                kind = "warthog"
-                vx, vy, vz = castle["gate"]
-            else:
-                vx, vy, vz = spots.pop()
-            vehicles.append(dict(level=lv["level"], kind=kind,
-                                 position=[vx, vy, vz + (0.5 if kind == "warthog" else 0.1)],
-                                 yaw=math.degrees(math.atan2(vy - cy, vx - cx)) + 90.0))
-            taken.append((vx, vy, vz, CLEAR))
-            want = max(4, int(isl["r"] * 0.7))
+                spots = [p for p in spots if max(abs(p[0] - icx), abs(p[1] - icy)) > castle["half"] + 4.0]
+            rng.shuffle(spots)
+            want = int(isl["r"] * (0.8 if isl.get("theme") == "grove" else 0.35)) + 2
             for p in spots:
                 if want == 0:
                     break
-                if all(math.hypot(p[0] - q[0], p[1] - q[1]) >= max(q[3], SPACING) or abs(p[2] - q[2]) > 6 for q in taken):
+                if free(p, SPACING):
                     scatter.append(dict(kind=rng.choice(SCATTER_ISLAND), position=list(p)))
                     taken.append((p[0], p[1], p[2], SPACING))
                     want -= 1
-        if castle:   # turrets on two tower tops
-            for tx, ty, tz in castle["towers"][:2]:
-                vehicles.append(dict(level=lv["level"], kind="turret", position=[tx, ty, tz + 0.1], yaw=0.0))
-    # The ground: trees in groves and rocks, away from the spawn area.
-    placed = 0
-    while placed < 140:
-        x, y = rng.uniform(-440, 440), rng.uniform(-440, 440)
-        if math.hypot(x, y) < 70:
+    # The ground: groves near the start and under the lower levels (where you land when you fall early).
+    anchors = [(0.0, 0.0)] + [(lv["islands"][0]["centre"][0], lv["islands"][0]["centre"][1]) for lv in layout["levels"][:5]]
+    placed, tries = 0, 0
+    while placed < 60 and tries < 5000:
+        tries += 1
+        ax, ay = rng.choice(anchors)
+        x, y = ax + rng.uniform(-90, 90), ay + rng.uniform(-90, 90)
+        if math.hypot(x, y) < 25 or max(abs(x), abs(y)) > 440:
             continue
         p = (x, y, terrain_height(x, y))
-        if all(math.hypot(p[0] - q[0], p[1] - q[1]) >= max(q[3], SPACING) or abs(p[2] - q[2]) > 6 for q in taken):
+        # Not under a low island: tall trees would poke up through it (review). Tallest stock pine ~25 WU.
+        if any(math.hypot(x - i["centre"][0], y - i["centre"][1]) < i["r"] * 1.3 and i["centre"][2] - p[2] < 60.0
+               for lv2 in layout["levels"] for i in lv2["islands"]):
+            continue
+        if free(p, SPACING):
             scatter.append(dict(kind=rng.choice(SCATTER_GROUND), position=list(p)))
             taken.append((p[0], p[1], p[2], SPACING))
             placed += 1
+    # Debug-teleport flags: on the main island at a spot clear of structures, the Warthog and trees (review: the old
+    # centre + 1.5 WU put you inside the watchtower, a spire or a wreck).
+    layout["flags"] = []
+    for lv in layout["levels"]:
+        main = lv["islands"][0]
+        if lv.get("castle"):
+            fx, fy, fz = lv["castle"]["gate"]
+            fx += 6.0
+        else:
+            fx, fy, fz = next((p for p in main["spots"] if free(p, 4.0)), main["spots"][0])
+        layout["flags"].append(dict(name="level_%d_flag" % lv["level"], position=[fx, fy, fz + 1.5]))
     layout["vehicles"] = vehicles
     layout["scatter"] = scatter
 
@@ -641,9 +771,7 @@ def build_scene(level_dir):
         layout["landing_zones"] += [isl["zone"] for isl in lv["islands"]] + lv.get("bridge_zones", [])
     if len(layout["landing_zones"]) > 240:   # Tool's limit is 256 trigger volumes; keep room for portals
         raise RuntimeError("%d landing zones: over the budget of 240 (scenario limit 256)" % len(layout["landing_zones"]))
-    layout["flags"] = [dict(name="level_%d_flag" % lv["level"],
-                            position=[lv["islands"][0]["centre"][0], lv["islands"][0]["centre"][1],
-                                      lv["islands"][0]["centre"][2] + 1.5]) for lv in layout["levels"]]
+    # (level flags are chosen in plan_placements, at a free spot)
 
     mat_names = []
     for _, name, _ in faces:
@@ -692,7 +820,7 @@ def build_scene(level_dir):
     # Shading: the built parts (walls, ramp, platform, bridges) keep crisp creases; terrain and islands are smooth.
     crisp = set()
     for group, gfaces in groups.items():
-        if group.startswith("bridge") or group.startswith("castle"):
+        if group.startswith("bridge") or group.startswith("castle") or (group.startswith("theme") and "spire" not in group):
             crisp.update(gfaces)
     crisp.update(f for f in groups.get("shell", []) if mat_names[f.material_index] in (MAT_SKY, MAT_RAMP, MAT_PLATFORM))
     for f in bm.faces:

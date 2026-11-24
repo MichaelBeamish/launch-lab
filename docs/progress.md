@@ -2,6 +2,37 @@
 
 Newest first. One entry per verified task or significant decision.
 
+## 2026-11-24 — Task 11: the Sky Islands world (the MVP)
+- **Built:**
+  - `art/launch_lab_arena.py` is now the **world generator**:
+    - terrain with hills and mesas;
+    - a 10-level climb (hops 30 → 115 WU, then growing rises, owner-tuned);
+    - natural islands (smooth noise, rounded undersides, smooth shading) and bridges with landing notches;
+    - island themes (ruins and watchtower, crash sites, landing pads with beacons, rock spires, groves, a pool);
+    - a Forerunner-style castle on a big summit at z 620.
+  - It writes the geometry, `world_layout.json` and `world.hsc`, and `scenario.ps1` applies the layout.
+  - **Scripts:** a fall guard (no mid-air fall death; you die at the ground), automatic checkpoints per level, a
+    flashlight-key checkpoint, unlimited ammo by script, per-level debug teleports.
+  - **Builds:** placements before the map; skip unchanged geometry (6 s vs minutes); quick draft lighting.
+  - **Removed:** the ramp and platform, vines, turrets, the test Banshee.
+- **Problems found and fixed:**
+  - The `c10 moss` shader is alpha-tested (see-through patches).
+  - Bridge ends intersected islands ("z buffered triangles", fixed with landing notches).
+  - The pool water reached into rock ("clipped to no leaves").
+  - Trigger volumes are **limited to 256** (Tool refused 397; tilted zones on hills fixed it; the research note was wrong).
+  - Scientific-notation numbers were misread by invader-edit (caught by read-back).
+  - `check-map` "OK" while Tool failed to load the scenario (filter tightened).
+  - The engine stores a fall death while damage is blocked (zones must end just above surfaces).
+  - The non-solid `tree_gnarled_doublewide`.
+- **Playtests (owner):** several rounds in Standalone ("it looks awesome"), then MCC: everything works, including
+  unlimited ammo (by script), the guns, checkpoints and the fall guard.
+- **Verified:** full builds clean (no BSP warnings, 11,410 surfaces, 6.4 MiB tags), `check-map` OK, scripts compile,
+  stock hashes PASS. Code review: 6 important and 4 small findings fixed (Warthog in wrecks, zones on columns and spires,
+  teleports into structures, the island overlap check, trees under low islands, flat plazas for wrecks); the hop
+  accuracy (±5 WU) noted.
+- **Scope (owner):** the MVP is this world as it stands; portals, waterfalls, a level HUD, ground bases, enemies and
+  ships are not planned. Browser play stays local-only (ADR 0003).
+
 ## 2026-11-23 — Task 10: world-scale experiment; Sky Islands design
 - **Design:**
   - `docs/product/map-design.md` records the owner's vision (massive floating islands, a climb that gets cooler as you

@@ -13,13 +13,15 @@ tuning global is added, renamed or removed. A drift check will come with the CI 
 | `docs/research/` | Feasibility research and matrix |
 | `docs/testing/playtest.md` | Manual playtest protocol |
 | `docs/decisions/` | ADRs |
-| `art/launch_lab_arena.py` | **Arena geometry as code** (Blender script): sealed shell on one grid, `+sky` walls/ceiling, ramp, platform, UVs; exports the JMS |
+| `art/launch_lab_arena.py` | **The world generator** (Blender script): terrain (hills, mesas), the 10-level climb (`LEVELS`: height, layout, hop, theme), natural islands, bridges with landing notches, island themes, the summit castle; plans placements; writes the JMS, `world_layout.json` and `world.hsc` |
+| `mod/data/levels/launch_lab/models/launch_lab.JMS` | **Generated, git-ignored**: the geometry |
+| `mod/data/levels/launch_lab/world_layout.json` | **Generated, git-ignored**: levels, islands, vehicles, trees and rocks (with exact heights), landing zones, level flags; read by `tools/scenario.ps1` |
+| `mod/data/levels/launch_lab/scripts/world.hsc` | **Generated, git-ignored**: fall guard (all landing zones), automatic checkpoints per level, flashlight-key checkpoint, `(dbg_tp_level_N)` teleports |
+| `mod/data/levels/launch_lab/scripts/launch_lab.hsc` | Hand-written HaloScript: `unlimited_ammo` (sets `cheat_infinite_ammo`, also in MCC); debug-only `dbg_` scripts: `(dbg_boom_1..8)`, `(dbg_hog_reset)`, `(dbg_tp_ground)` |
 | `mod/tags/levels/launch_lab/launch_lab.scenario` | Our scenario (committed): type singleplayer, sky `sky_timberland` (set in Guerilla), placements from `tools/scenario.ps1` |
-| `mod/data/levels/launch_lab/models/launch_lab.JMS` | **Generated, git-ignored**: exported by the arena script |
-| `tools/scenario.ps1` | **Placements as code** (ADR 0004): spawn, vehicles, equipment, cutscene flags, object names via `invader-edit`; read-back + `check-map` |
-| `mod/data/levels/launch_lab/scripts/launch_lab.hsc` | Level HaloScript. Debug-only `dbg_` scripts: `(dbg_boom_1..8)` stacked stock frag explosions at `boom_flag`, `(dbg_hog_reset)` |
-| `tools/build.ps1` | Build steps `jms`, `structure`, `lightmaps`, `cache` (or `all`); fails on error lines or a new `.wrl`; logs in `build-logs/` (ignored) |
-| `tools/sync.ps1` | `push` repo → tools folder; `pull` the `.scenario` back after a GUI edit. Refuses to push over unpulled GUI work |
+| `tools/scenario.ps1` | **Placements as code** (ADR 0004): hand-made items (spawn, `hog`, frags, starting profile, debug flags) plus the generated world from `world_layout.json`; batched `invader-edit` writes, sampled read-back, `check-map` |
+| `tools/build.ps1` | Steps `jms`, `devices`, `structure`, `lightmaps`, `scenario`, `cache` (or `all`). Skips structure + lightmaps when the geometry is unchanged (`-Rebuild` forces); draft lightmaps by default (`-LightmapQuality 1 -LightmapStop 0.3` for release); fails on error lines or a new `.wrl`; logs in `build-logs/` (ignored) |
+| `tools/sync.ps1` | `push` repo → tools folder; `pull` the `.scenario` back after a GUI edit. Refuses to push over unpulled GUI work (hash-based) |
 | `tools/devices.ps1` | **Gameplay devices from stock** (ADR 0005): pile gun (pistol → frag pellet → stock frag pickup) and shield gun (plasma pistol → orb pellet → stock overshield). Every change from stock listed and read back; outputs generated in the tools folder (git-ignored) |
 | `tools/mcc-swap.ps1` | `install` / `restore` / `status`: plays our map in MCC in place of a stock SP map (`a10`), with a SHA-256-checked backup |
 | `tools/local.config.ps1` | **Git-ignored.** Machine paths: mod tools folder (`ToolsRoot`) and MCC folder (`GameRoot`) |
@@ -32,19 +34,25 @@ tuning global is added, renamed or removed. A drift check will come with the CI 
 ## Named scenario objects, flags and volumes
 | Name | What | Where (WU) | Defined in |
 |---|---|---|---|
-| `hog` | Stock Warthog (`vehicles\warthog\warthog.vehicle`) | (0, −15, 0.5), yaw 90° (up the ramp) | `tools/scenario.ps1` |
-| *(unnamed)* | Player start | (0, −17, 0.5), facing 90° | `tools/scenario.ps1` |
-| *(unnamed)* ×3 | Frag grenade pickups | (2..4, −17, 0.2) | `tools/scenario.ps1` |
-| `boom_flag` | Cutscene flag under the Warthog (task 8 debug explosions) | (0, −15, 0.1) | `tools/scenario.ps1` |
+| `hog` | Stock Warthog on the ground | (0, −15, 0.5) | `tools/scenario.ps1` |
+| *(unnamed)* | Player start; 3 frag pickups | (0, −17, 0.5); (2..4, −17, 0.2) | `tools/scenario.ps1` |
+| `boom_flag`, `ground_flag` | Debug flags: stacked explosions (task 8), teleport back to the spawn | (0, −15, 0.1), (0, −17, 0.5) | `tools/scenario.ps1` |
+| `level_N_flag` | Debug teleport target per level (a free spot on the main island) | generated | `world_layout.json` |
+| `level_N_zone_K` | Landing zone over each island; also that level's checkpoint zone | generated | `world_layout.json` |
+| `ground_zone`, `hill_I_J` | Landing zones: flat ground, and tilted zones over hilly ground | generated | `world_layout.json` |
+| `level_N_bridge_zone_K`, `level_N_castle_zone_K`, `level_N_K_structure_zone_T` | Landing zones over bridges, castle parts, theme structures | generated | `world_layout.json` |
 
-Arena layout (`art/launch_lab_arena.py`): 40 × 40 WU, ceiling 30 WU; ramp x −3..3, y −12 → 0, top 3 WU; platform x −5..5,
-y 8..16, 4 WU high (not reachable by driving; the launch target).
+The world (`art/launch_lab_arena.py`): 1000 × 1000 × 1000 WU sky box; 10 levels from z 20 to the castle summit at z 620;
+hops 30, 45, 65, 90, then 115 WU; one Warthog per group of connected islands. Limit: 256 trigger volumes per scenario
+(the generator stops at 240).
 
 ## To change X, edit Y
 - **Change a gun or what it drops** → edit `$Devices` in `tools/devices.ps1`, then `tools\build.ps1 -Step devices` (Standalone reads the new tags at load).
 - **Change the starting loadout** → `$StartingProfile` in `tools/scenario.ps1`.
-- **Move or add a spawn, vehicle or pickup** → edit the lists at the top of `tools/scenario.ps1`, run it, then load in Standalone.
-- **Change the arena shape** → edit the layout constants in `art/launch_lab_arena.py`, then `tools\build.ps1 -Step all`.
+- **Move or add a hand-made spawn, vehicle or pickup** → the lists at the top of `tools/scenario.ps1`, then `tools\build.ps1 -Step all`.
+- **Change the climb** (heights, hops, cluster/solo, themes) → the `LEVELS` table in `art/launch_lab_arena.py`, then `tools\build.ps1 -Step all`.
+- **Change the terrain** → `HILLS` / `MESAS` in `art/launch_lab_arena.py`. **An island's look or a theme** → `natural_island` / `build_theme`.
+- **Change what grows where** → `SCATTER_ISLAND` / `SCATTER_GROUND` and `plan_placements` (generator); stock paths in `$SceneryKinds` (`tools/scenario.ps1`).
 - **Play our map in MCC** → `tools\build.ps1 -Step cache`, `tools\mcc-swap.ps1 install`, play *The Pillar of Autumn* (anti-cheat off), then `tools\mcc-swap.ps1 restore`.
 - **Change what Standalone does at startup** (level, cheats) → edit `tools/standalone/init.txt`, relaunch with `tools\standalone.ps1`.
 - **Protect another stock tag** → add it to `$StockTags` in `tools/stock-baseline.ps1`, then re-record (owner's OK).

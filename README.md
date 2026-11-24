@@ -4,7 +4,7 @@ A physics stunt playground: a custom singleplayer map for *Halo: Combat Evolved*
 built with the official Halo CE mod tools. Launch Warthogs with endless grenades, chain explosions, and tackle stunt
 challenges, all on the original engine's physics.
 
-**Status:** Milestone 1. A minimal test arena (ramp, platform, one Warthog, grenade pickups) builds and plays in MCC. See [`docs/product/roadmap.md`](docs/product/roadmap.md).
+**Status:** MVP done: the Sky Islands world, a 10-level climb of floating islands up to a castle, plays in MCC. See [`docs/product/roadmap.md`](docs/product/roadmap.md).
 
 ## How it's built
 - **Engine:** Halo CE in MCC, unmodified. Stock physics tags are used as shipped ([ADR 0002](docs/decisions/0002-mcc-physics-baseline-stock-tags.md)).

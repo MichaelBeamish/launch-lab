@@ -12,16 +12,26 @@ Before starting a task, run `/plan-task <n>`.
 | 8 | Launch experiment: stacked stock frag explosions | 1 | done |
 | 9 | Grenade pile gun + overshield gun (devices from stock tags) | 1 | done |
 | 10 | World-scale experiment: floating island, pool, plants, height limits | 4 | done |
-| 11 | Sky Islands, stage 1: the ground level + first islands | 4 | in-progress |
-| 12 | One device gun (two fire modes) + a real weapon | 3 | todo |
-| 13 | Checkpoints when reaching a new level | 3 | todo |
-| 14 | Enemies on islands; enemy-flown Banshees | 4 | todo |
-| 15 | Slow flying ships you can walk on (device machines) | 4 | todo |
-| 16 | A big stationary ship (our own geometry) | 4 | todo |
-| 4 | Endless grenades (compare 3 methods) | 1 | todo |
-| 5 | Reset Warthog + player | 1 | todo |
-| 6 | Landing-platform challenge + feedback | 2 | todo |
+| 11 | Sky Islands world: the MVP (terrain, 10 levels, themes, castle, checkpoints) | 4 | done |
+| 12 | One device gun (two fire modes) + a real weapon | 3 | dropped |
+| 13 | Checkpoints when reaching a new level | 3 | done |
+| 14 | Enemies on islands; enemy-flown Banshees | 4 | dropped |
+| 15 | Slow flying ships you can walk on (device machines) | 4 | dropped |
+| 16 | A big stationary ship (our own geometry) | 4 | dropped |
+| 4 | Endless grenades (compare 3 methods) | 1 | done |
+| 5 | Reset Warthog + player | 1 | dropped |
+| 6 | Landing-platform challenge + feedback | 2 | dropped |
 | 7 | CI: repo-hygiene guard + HSC lint | 2 | todo |
+
+**Scope decision (owner, 2026-11-24): the MVP is the Sky Islands world as it stands** ("no need for portals or any of
+that other stuff, let's keep this the MVP as is"). Resolved by other means or dropped:
+- **4 done by other means:** unlimited grenades by script (`(set cheat_infinite_ammo on)`, task 11), plus the pile gun
+  (task 9). MCC confirmation is part of task 11's MCC playtest.
+- **5 dropped:** checkpoints replace resets (die → back to your last level or flashlight save).
+- **6 dropped:** the climb itself is the challenge (automatic checkpoints per level).
+- **13 done** in task 11. **12, 14, 15, 16 dropped**, along with Stage B (portals, waterfalls, a level-number HUD,
+  ground bases): see `docs/product/map-design.md`.
+- **7 (CI)** stays for later: it needs a GitHub remote first.
 
 ## 1. Local repo + baseline commit
 `git init` in `launch-lab`, `main` as the default branch, add `.gitignore`, then commit the kickoff docs and skills **with the owner's

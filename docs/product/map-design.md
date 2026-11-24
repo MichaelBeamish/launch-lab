@@ -130,3 +130,11 @@ last castle island"). Requested changes, with measurements and proposals:
 - **Remove the castle tower turrets**: Warthogs only, one per connected group, one at the castle gate.
 - **Lag: trim scenery now** (fewer islands and fewer far-away trees), then retest in Standalone.
 - Drop `tree_gnarled_doublewide` (no collision).
+
+## MVP scope (owner, 2026-11-24)
+"No need for portals or any of that other stuff; let's keep this the MVP as is." The MVP is the round 3 world:
+terrain with hills and mesas, 10 levels (hops 30 → 115 WU, then rising gaps), themed islands, the summit castle, a
+Warthog per group, automatic and flashlight checkpoints, the fall guard, the pile gun and the overshield gun, and
+unlimited ammo (also in MCC, by script). **Not planned:** portals, waterfalls, a level-number HUD, ground bases,
+enemies, flying ships, the big ship. Browser play stays a local-only experiment (ADR 0003); sharing is as an MCC
+custom map, with a video and write-up.

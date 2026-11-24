@@ -28,3 +28,9 @@ Syntax learned: `block[i].field`; points are comma-separated; angles are *set* i
 - ➖ Running with `-n` bypasses Invader's safeguards. This is mitigated by read-back checks and `check-map`.
 - Alternatives: the owner uses Sapien with a USB mouse (still possible); a hand-written tag writer (too risky).
 - Revisit if a tools update breaks Invader compatibility, or if a later task needs visual placement (e.g. Milestone 4 world building).
+
+## Addendum (2026-11-24, task 11)
+At world scale, placements are no longer only hand-written lists: the world generator (`art/launch_lab_arena.py`)
+writes `world_layout.json` (vehicles, trees and rocks with exact surface heights, landing zones, flags), and
+`tools/scenario.ps1` applies it alongside the hand-made items. Writes are batched (one `invader-edit` call per element)
+and generated blocks are read back by sample (first, last, every 25th). Limit learned: 256 trigger volumes per scenario.

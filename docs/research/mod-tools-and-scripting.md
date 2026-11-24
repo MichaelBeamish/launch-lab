@@ -88,7 +88,8 @@ Source: [c20 scripting](https://c20.reclaimers.net/h1/scripting/) unless noted. 
   - 256 entries per object palette.
   - 256 placed vehicles.
   - Up to 65535 placed scenery objects.
-  - Up to 65534 trigger volumes.
+  - ~~Up to 65534 trigger volumes.~~ **Wrong: the real limit is 256.** Tool refused 397 in task 11:
+    "scenario_trigger_volume_block block has invalid element count: #397 not in [0,#256]".
   - 640 object names.
   - 512 cutscene flags.
 - **Runtime:** [game state](https://c20.reclaimers.net/h1/engine/game-state/)

@@ -93,3 +93,20 @@ The owner's review document. Each entry covers what it is, how we use it, and an
   on settling until their `detonation_effect` was cleared.
 - **Frontend analogy:** like extending a design-system component through its props (model, effect, sound) without
   forking its internals: every force on screen is still the stock grenade and its stock explosion.
+
+### A world from one generator (task 11)
+- **What:** one script builds the geometry *and* writes the data everything else is derived from (a layout file read by
+  the placement script, and generated HaloScript). Placements, landing zones and checkpoints can't drift from the islands.
+- **Frontend analogy:** like generating API types and client code from one schema: one source, several outputs, so a change
+  ripples everywhere consistently.
+
+### Engine limits and tricks met at scale (task 11)
+- **256 trigger volumes per scenario** (Tool: "invalid element count: #397 not in [0,#256]"). `rotational` volumes can be
+  tilted to follow a slope, so fewer, thinner zones cover hills.
+- **The engine remembers a fall death** while damage is blocked, and applies it the moment damage is back on, so "no
+  mid-air death" means re-enabling damage just above each surface.
+- **Scripts can set cheat switches** (`(set cheat_infinite_ammo on)`), as the stock campaign does
+  (`cinematics_b30.hsc`: `(set cheat_deathless_player on)`). That's how MCC, which has no console, gets unlimited ammo.
+- **Solids must never touch:** bridges needed "landing notches" in the islands, and castle parts keep 0.2 WU gaps.
+- **One-liner:** "I moved a Halo level from hand-placed content to a deterministic generator, then hit and engineered
+  around the engine's real limits (trigger-volume caps, solid intersections, fall-death state) with automated checks."

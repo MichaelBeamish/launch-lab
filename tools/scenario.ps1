@@ -30,11 +30,9 @@ $PlayerStarts = @(
 )
 $VehiclePalette = @(
     'vehicles\warthog\warthog.vehicle'    # 0: stock campaign Warthog (not mp_warthog)
-    'vehicles\banshee\banshee.vehicle'    # 1: stock campaign Banshee, for testing only (owner: "put one at the bottom")
 )
 $Vehicles = @(
     @{ Type = 0; Name = 'hog'; Position = @(0, -15, 0.5); Yaw = 90 }   # between the spawn and the ramp
-    @{ Type = 1; Name = 'dev_banshee'; Position = @(-10, -18, 0.5); Yaw = 90 }   # test Banshee, left of the spawn (task 11)
 )
 $EquipmentPalette = @('weapons\frag grenade\frag grenade.equipment')
 $Equipment = @(
@@ -68,22 +66,26 @@ $SceneryKinds = [ordered]@{
     'yellowbig'          = 'scenery\plants\plant_yellowbig\plant_yellowbig.scenery'
     'boulder'            = 'scenery\rocks\boulder\boulder.scenery'
     'tree_leafy'         = 'scenery\trees\tree_leafy\tree_leafy.scenery'
-    'tree_gnarled'       = 'scenery\trees\tree_gnarled_doublewide\tree_gnarled_doublewide.scenery'
     'tree_dense'         = 'scenery\trees\tree_leafydense_doublewide\tree_leafydense_doublewide.scenery'
     'trunk'              = 'scenery\trees\tree_leafy_fallentrunk_short\tree_leafy_fallentrunk_short.scenery'
     'pine'               = 'levels\test\timberland\scenery\mp_tree_pine_tall\mp_tree_pine_tall.scenery'
     'boulder_moss'       = 'levels\test\timberland\scenery\mp_boulder_moss_small\mp_boulder_moss_small.scenery'
     'boulder_moss_large' = 'scenery\rocks\boulder_moss_large\boulder_moss_large.scenery'
     'boulder_granite'    = 'levels\test\timberland\scenery\mp_boulder_granite_medium\mp_boulder_granite_medium.scenery'
+    # Island themes (task 11): crash sites and landing-pad beacons
+    'wreck_pelican'      = 'scenery\vehicles\pelican_crashed\pelican_crashed.scenery'
+    'wreck_dropship'     = 'scenery\vehicles\c_dropship_crashed\c_dropship_crashed.scenery'
+    'wreck_banshee'      = 'scenery\debris\banshee_crashed\banshee_crashed.scenery'
+    'wreck_lifepod'      = 'scenery\vehicles\lifepod_crashed\lifepod_crashed.scenery'
+    'beacon'             = 'scenery\landing beacon\landing beacon.scenery'
 }
 $SceneryPalette = @($SceneryKinds.Values)
 $SceneryIndex = @{}; $n = 0; foreach ($k in $SceneryKinds.Keys) { $SceneryIndex[$k] = $n; $n++ }
 $Scenery = @($Layout.scatter | ForEach-Object { @{ Type = $SceneryIndex[$_.kind]; Position = @($_.position) } })
 
-# A Warthog or a Covenant gun turret on every level (owner). Palette indices: 0 Warthog, 2 turret.
-$VehiclePalette += 'vehicles\c gun turret\c gun turret.vehicle'
+# A Warthog per connected group of islands (owner; no turrets since the stage A playtest). Palette: 0 Warthog.
 $Vehicles += @($Layout.vehicles | ForEach-Object {
-    @{ Type = $(if ($_.kind -eq 'warthog') { 0 } else { 2 }); Name = ''; Position = @($_.position); Yaw = [double]$_.yaw } })
+    @{ Type = $(if ($_.kind -eq 'warthog') { 0 } else { throw "Unknown vehicle kind '$($_.kind)' in the layout" }); Name = ''; Position = @($_.position); Yaw = [double]$_.yaw } })
 
 # Trigger volumes: every landing zone (fall guard; the island ones are also the checkpoints). Stock convention (a10):
 # type rotational, forward (1,0,0), up (0,0,1), starting corner = low corner, ending corner offset = size.
