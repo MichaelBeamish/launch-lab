@@ -41,3 +41,19 @@
 (script static void dbg_hog_reset
 	(object_create_anew hog)
 )
+
+; ---- Debug teleports (task 10 world-scale experiment) ---------------------------------------------------
+; Jump straight to a level of the world: e.g. (dbg_tp_island_top) puts you on the island at z 900.
+; (player0) is defined in the stock data\global_scripts.hsc as (unit (list_get (players) 0)).
+
+(script static void dbg_tp_ground
+	(object_teleport (player0) ground_flag)
+)
+
+(script static void dbg_tp_island_low
+	(object_teleport (player0) island_low_flag)
+)
+
+(script static void dbg_tp_island_top
+	(object_teleport (player0) island_top_flag)
+)

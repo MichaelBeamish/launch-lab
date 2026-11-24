@@ -11,6 +11,13 @@ Before starting a task, run `/plan-task <n>`.
 | 3 | Minimal custom arena with one Warthog, playable in Standalone + MCC | 1 | done |
 | 8 | Launch experiment: stacked stock frag explosions | 1 | done |
 | 9 | Grenade pile gun + overshield gun (devices from stock tags) | 1 | done |
+| 10 | World-scale experiment: floating island, pool, plants, height limits | 4 | done |
+| 11 | Sky Islands, stage 1: the ground level + first islands | 4 | todo |
+| 12 | One device gun (two fire modes) + a real weapon | 3 | todo |
+| 13 | Checkpoints when reaching a new level | 3 | todo |
+| 14 | Enemies on islands; enemy-flown Banshees | 4 | todo |
+| 15 | Slow flying ships you can walk on (device machines) | 4 | todo |
+| 16 | A big stationary ship (our own geometry) | 4 | todo |
 | 4 | Endless grenades (compare 3 methods) | 1 | todo |
 | 5 | Reset Warthog + player | 1 | todo |
 | 6 | Landing-platform challenge + feedback | 2 | todo |
@@ -67,6 +74,20 @@ stock pistol) → pellet (copy of the pistol bullet, no damage) → impact effec
 - The second gun's shots become overshield pickups you can collect.
 - One thrown grenade sets off a pile, which cascades.
 - The stock hash check passes; `check-map` and the cache build are clean.
+
+## 10. World-scale experiment
+Prove the Sky Islands building blocks before building the world (see `docs/product/map-design.md`): a floating island,
+stock plants and a boulder on it, a stock water pool, a much bigger and taller sky box, and how build and lightmap times
+grow. Planned in chat with the owner.
+
+## 11–16. Sky Islands and later features
+From the owner's map vision (`docs/product/map-design.md`). Each is planned when it comes up.
+- **12:** the two devices merged into one gun (plasma pistol: normal shot = grenades, charged = overshields), freeing a
+  slot for a real weapon (players carry two weapons: *likely*, to be confirmed).
+- **13:** checkpoints on reaching a level (`game_save`-style; to be researched).
+- **14:** enemies (AI encounters) on some islands, and Banshees flown by enemies.
+- **15:** walkable slow ships as device machines (our own model and animation).
+- **16:** a big stationary ship built as our own geometry.
 
 ## 4. Endless grenades
 Try `cheat_infinite_ammo`, a scripted top-up and respawning pickups. Choose one with the owner (ADR if it's notable).

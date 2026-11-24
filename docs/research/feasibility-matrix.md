@@ -26,7 +26,8 @@ Legend: **Confirmed** (documented) · **Likely** (strong indirect evidence) · *
 | Player input for sandbox controls | **Likely** | `player_action_test_*` (grenade, action, jump…). There is no custom keybinding or menu UI; controls are contextual | Milestone 3 experiment |
 | Skull-like modifiers | **Likely (partial)** | Cheat globals (`cheat_bottomless_clip`, `cheat_super_jump`, `cheat_jetpack`, `cheat_deathless_player`, `cheat_omnipotent`), `physics_set_gravity`. MCC's own skulls are menu options; **script control is unknown** | Milestone 3 experiment |
 | Chain reactions | **Confirmed (singleplayer only)** | "Detonates explosives" works only in singleplayer, so we build a **singleplayer scenario** | Milestone 3/4 |
-| Large world | **Confirmed, with care** | Tag space 64 MiB; BSP up to 131k surfaces; vehicles die below z ≈ −4950; precision drops far from the origin | Milestone 4 (keep near the origin) |
+| Large world | **Proven ✅ (task 10)** at 1000 × 1000 × 1000 WU: no jitter at z 900, smooth frame rate, 3.94 MiB tags; draft lightmaps 8.8 min (one core). c20 vertex limit ±1500 WU. Earlier notes: | Tag space 64 MiB; BSP up to 131k surfaces; vehicles die below z ≈ −4950; precision drops far from the origin | Milestone 4 (keep near the origin) |
+| Floating islands (static) | **Proven ✅ (task 10)** | Separate closed solids inside the sealed world, normals outward: build, render, collide and light. Tested at z 40 and z 900 | Task 10 |
 | Floating ships / platforms | **Confirmed** | Static scenery or BSP geometry at height. Moving platforms need device machines (not researched) | Milestone 4 |
 | Play in MCC as a custom map | **Proven ✅ (task 3)** | Built `classic`; **replacement method**: our map as `halo1\maps\a10.map`, MCC with anti-cheat off, played as *The Pillar of Autumn* (`tools/mcc-swap.ps1`). A menu entry of its own: not found; Steam Workshop route unexplored | Task 3 |
 | Browser play (OpenCE) | **Unknown** | Requires an Xbox disc image; MCC-map support is experimental; the physics base is a pre-release Xbox build | Milestone 5 (local only) |
@@ -34,7 +35,7 @@ Legend: **Confirmed** (documented) · **Likely** (strong indirect evidence) · *
 | New mechanics (e.g., direct velocity control) | **Blocker without engine changes** | No `object_set_velocity`. Approximate with invisible `damage_new` impulses (Likely) | Only if needed |
 
 ## Biggest unknowns, in the order we'll test them
-1. Do effect-created grenade pickups pile up and chain-react in game? (Task 9)
+1. Can a script remove the mid-air fall death but keep the landing death? (Next batch)
 2. Which unlimited-grenade method feels right without distorting stock behaviour? (Task 4)
 3. How close is OpenCE physics to our MCC baseline? (Milestone 5)
 

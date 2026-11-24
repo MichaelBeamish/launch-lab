@@ -3,7 +3,7 @@
   Applies Launch Lab's scenario placements (spawn, vehicles, equipment, object names) with invader-edit (ADR 0004).
 
 .DESCRIPTION
-  The lists below (starting profile, spawns, vehicles, equipment, cutscene flags) are the source of truth: each run
+  The lists below (starting profile, spawns, vehicles, equipment, scenery, cutscene flags) are the source of truth: each run
   clears and rewrites those blocks, so edits to them in Sapien/Guerilla are overwritten. The script:
     1. syncs the repo into the tools folder (tools\sync.ps1 push; refuses if there is unpulled Sapien/Guerilla work),
     2. clears the placement blocks and writes them again from the list (so re-running never duplicates anything),
@@ -49,9 +49,28 @@ $StartingProfile = [ordered]@{
     'starting_fragmentation_grenade_count' = '4'
 }
 
+# Static scenery (stock): plants and rocks. Task 10: dressing for the low floating island (top at z 40, centre 0,40).
+$SceneryPalette = @(
+    'scenery\plants\plant fern\plant fern.scenery'
+    'scenery\plants\plant_broadleaf_tall\plant_broadleaf_tall.scenery'
+    'scenery\plants\plant_yellowbig\plant_yellowbig.scenery'
+    'scenery\rocks\boulder\boulder.scenery'
+)
+$Scenery = @(
+    @{ Type = 0; Position = @(-5, 36, 40.05) }
+    @{ Type = 0; Position = @(6, 44, 40.05) }
+    @{ Type = 1; Position = @(-6, 45, 40.05) }
+    @{ Type = 1; Position = @(4, 35, 40.05) }
+    @{ Type = 2; Position = @(0, 46, 40.05) }
+    @{ Type = 3; Position = @(5, 40, 40.05) }
+)
+
 # Cutscene flags: named points that scripts target (damage_new, effect_new, object_teleport).
 $CutsceneFlags = @(
-    @{ Name = 'boom_flag'; Position = @(0, -15, 0.1) }     # on the floor under the Warthog's centre (task 8)
+    @{ Name = 'boom_flag'; Position = @(0, -15, 0.1) }        # on the floor under the Warthog's centre (task 8)
+    @{ Name = 'ground_flag'; Position = @(0, -17, 0.5) }      # the spawn spot: debug teleport back (task 10)
+    @{ Name = 'island_low_flag'; Position = @(0, 40, 41) }    # on top of the low island (task 10)
+    @{ Name = 'island_top_flag'; Position = @(0, 70, 901) }   # on top of the high island, z 900 (task 10)
 )
 # --------------------------------------------------------------------------------------------------------
 
@@ -120,15 +139,15 @@ try {
 
 # This script owns object_names, but only builds names for vehicles. Refuse if other placement blocks are in use
 # (their name indices would dangle); extend the script first if a task needs them.
-foreach ($b in 'scenery', 'bipeds', 'weapons', 'machines', 'controls', 'light_fixtures', 'sound_scenery') {
+foreach ($b in 'bipeds', 'weapons', 'machines', 'controls', 'light_fixtures', 'sound_scenery') {
     $r = Invoke-Native $Ie @('-t', $Tags, '-C', $b, $Scenario)
     if ($r.Code -ne 0) { throw "invader-edit -C $b failed: $($r.Out -join ' ')" }
-    if ([int]($r.Out -join '') -gt 0) { throw "The scenario has $($r.Out -join '') $b placement(s); tools\scenario.ps1 only manages the starting profile, spawns, vehicles, equipment and cutscene flags. Extend it before running." }
+    if ([int]($r.Out -join '') -gt 0) { throw "The scenario has $($r.Out -join '') $b placement(s); tools\scenario.ps1 only manages the starting profile, spawns, vehicles, equipment, scenery and cutscene flags. Extend it before running." }
 }
 
 # 2. Clear placement blocks. Instances first, then palettes and names (instances point at them by index).
 Clear-Block 'equipment'; Clear-Block 'vehicles'; Clear-Block 'player_starting_locations'; Clear-Block 'cutscene_flags'
-Clear-Block 'player_starting_profile'
+Clear-Block 'player_starting_profile'; Clear-Block 'scenery'; Clear-Block 'scenery_palette'
 Clear-Block 'equipment_palette'; Clear-Block 'vehicle_palette'
 Clear-Block 'object_names' -NoSafeguards   # guarded by invader-edit; -n only here (ADR 0004)
 
@@ -169,7 +188,7 @@ for ($i = 0; $i -lt $PlayerStarts.Count; $i++) {
     $Expect["player_starting_locations[$i].facing"] = @($s.Facing)
 }
 
-foreach ($p in @(@{ Block = 'vehicle_palette'; Items = $VehiclePalette }, @{ Block = 'equipment_palette'; Items = $EquipmentPalette })) {
+foreach ($p in @(@{ Block = 'vehicle_palette'; Items = $VehiclePalette }, @{ Block = 'equipment_palette'; Items = $EquipmentPalette }, @{ Block = 'scenery_palette'; Items = $SceneryPalette })) {
     if (-not $p.Items.Count) { continue }
     Edit-Tag @('-I', $p.Block, "$($p.Items.Count)", 'end')
     for ($i = 0; $i -lt $p.Items.Count; $i++) {
@@ -192,6 +211,15 @@ for ($i = 0; $i -lt $Vehicles.Count; $i++) {
     $Expect["vehicles[$i].type"] = "$($v.Type)"
     $Expect["vehicles[$i].position"] = $v.Position
     $Expect["vehicles[$i].rotation"] = @($v.Yaw, 0, 0)
+}
+
+if ($Scenery.Count) { Edit-Tag @('-I', 'scenery', "$($Scenery.Count)", 'end') }
+for ($i = 0; $i -lt $Scenery.Count; $i++) {
+    $e = $Scenery[$i]
+    Edit-Tag @('-S', "scenery[$i].type", "$($e.Type)")
+    Edit-Tag @('-S', "scenery[$i].position", (Format-Point $e.Position))
+    $Expect["scenery[$i].type"] = "$($e.Type)"
+    $Expect["scenery[$i].position"] = $e.Position
 }
 
 if ($Equipment.Count) { Edit-Tag @('-I', 'equipment', "$($Equipment.Count)", 'end') }

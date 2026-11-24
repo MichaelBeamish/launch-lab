@@ -2,6 +2,24 @@
 
 Newest first. One entry per verified task or significant decision.
 
+## 2026-11-23 — Task 10: world-scale experiment; Sky Islands design
+- **Design:**
+  - `docs/product/map-design.md` records the owner's vision (massive floating islands, a climb that gets cooler as you
+    go, bridges, pools, waterfalls, tanks and turrets on islands, later enemies and ships) and c20's world limits.
+  - Roadmap Milestone 4 is now "Sky Islands"; backlog tasks 11–16 added.
+- **Built:**
+  - The arena became a 1000 × 1000 × 1000 WU sky box (50 WU grid).
+  - Two floating islands (z 40 and z 900), a water pool, stock plants and a boulder (`scenario.ps1` now manages scenery).
+  - Debug teleports.
+  - The arena script now orients each closed shape on its own (the shell faces inwards, islands outwards) and seal-checks each one.
+- **Results** (`docs/research/world-scale.md`):
+  - Structure 3 s with no warnings; draft lightmaps **8.8 min** on one core; tag space 3.94 MiB.
+  - Playtest: massive, teleports work, islands solid; plants, boulder and water render; no jitter at z 900; smooth frame rate.
+- **Owner feedback for next:** natural-looking islands, a few natural walk-out pools, a test Banshee, no mid-air fall
+  death (keep the impact death), and faster iteration than re-lighting every build.
+- **Verified:** builds, `check-map`, stock hashes PASS; owner playtest. Code review skipped: geometry and data-list
+  changes, checked by the script's own seal check and the builds.
+
 ## 2026-11-23 — Task 9: grenade pile gun and overshield gun (ADR 0005)
 - **Built:** `tools/devices.ps1` generates two devices from stock tags with `invader-edit`:
   - **Pile gun:** stock pistol copy → frag-projectile pellet (muzzle speed 8, final 0; per-surface detonation effects
