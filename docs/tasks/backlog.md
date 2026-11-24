@@ -12,7 +12,7 @@ Before starting a task, run `/plan-task <n>`.
 | 8 | Launch experiment: stacked stock frag explosions | 1 | done |
 | 9 | Grenade pile gun + overshield gun (devices from stock tags) | 1 | done |
 | 10 | World-scale experiment: floating island, pool, plants, height limits | 4 | done |
-| 11 | Sky Islands, stage 1: the ground level + first islands | 4 | todo |
+| 11 | Sky Islands, stage 1: the ground level + first islands | 4 | in-progress |
 | 12 | One device gun (two fire modes) + a real weapon | 3 | todo |
 | 13 | Checkpoints when reaching a new level | 3 | todo |
 | 14 | Enemies on islands; enemy-flown Banshees | 4 | todo |

@@ -47,3 +47,7 @@ build-logs/
 # Sync bookkeeping (tools/sync.ps1)
 tools/.sync-state.json
 
+
+# World generator outputs (art/launch_lab_arena.py): layout for placements, generated level scripts
+mod/data/levels/launch_lab/world_layout.json
+mod/data/levels/launch_lab/scripts/world.hsc

@@ -50,10 +50,5 @@
 	(object_teleport (player0) ground_flag)
 )
 
-(script static void dbg_tp_island_low
-	(object_teleport (player0) island_low_flag)
-)
-
-(script static void dbg_tp_island_top
-	(object_teleport (player0) island_top_flag)
-)
+; Level debug teleports (dbg_tp_level_N), the fall guard and checkpoints are generated into world.hsc by
+; art/launch_lab_arena.py from the world layout (task 11).

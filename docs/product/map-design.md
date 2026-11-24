@@ -96,3 +96,37 @@ Floating islands, stock plants and rocks, water and full height (1000 WU) all wo
 ## Budgets to design within
 2048 objects alive at once (grenade piles count!), 256 placed vehicles, 64 MiB tag space, one BSP for now. Keep the world
 centred near the origin. Lightmap time grows with size, so we use draft quality while building.
+
+## Sky Islands stage A: owner playtest notes (2026-11-24) — NOT YET IMPLEMENTED
+What worked: the hills ("look awesome"), checkpoints (automatic and the flashlight key), the castle summit ("love the
+last castle island"). Requested changes, with measurements and proposals:
+
+1. **Hop distances.** "Height isn't necessarily what is hard; what's difficult is distance." The owner climbed to about
+   level 8 and then couldn't launch between islands. Measured hops (horizontal, edge to edge) in stage A:
+   L2 53, L3 35, L4 72, L5 76, L6 124, L7 113, **L8 155**, L9 168, L10 243, L11 157, L12 284, L13 200 WU.
+   - Early gaps should be what the mid levels have now; the mid levels have the biggest gaps there should be.
+   - Proposal: horizontal hops start small and grow to a **cap** at mid height, then stay at the cap while the
+     **rises** (vertical gaps) keep growing instead. Cap: about the L6–L7 hops (~115–125 WU), which the owner managed.
+2. **Fewer islands and a lower summit.** The summit can sit at two thirds of its current height (930 → about 620 WU);
+   fewer islands overall. That also helps performance (fewer solids, trees and vehicles).
+3. **More diversity on the islands in between** (the castle sets the bar). Theme ideas to choose from: ruins (broken
+   walls, columns), a crashed Pelican or dropship, a watchtower, a beacon garden, a dense grove, rock spires, a pool,
+   a small fort or bunker, a landing pad.
+4. **Vehicles: Warthogs only, one per connected group** (a cluster of bridged islands = one group; a solo island = its
+   own group). No Covenant turrets ("ditch the shades"). Open question: the two castle tower turrets.
+5. **Non-solid trees:** `tree_gnarled_doublewide` has no collision model in stock (`collision_model` is empty), so it
+   is decoration only. Drop it from the scatter lists.
+6. **Lag with 24+ frags at once.** Likely causes: every frag explosion spawns stock particles, lights, decals and
+   damage (we can't change stock effects: ADR 0002); the whole 3 km world is one render cluster, so everything is
+   drawn every frame (an open world with a sky sees most of it anyway, so portals help little); 322 scenery items;
+   Standalone may be slower than MCC (unverified). Options: test the same pile in MCC first; fewer islands and
+   scenery; fewer trees far from the climb.
+
+**Owner decisions (2026-11-24):**
+- **10 levels**; the summit at about 620 WU. Hops start at ~20–30 WU and grow to a **cap of ~115 WU** by about
+  level 5; after that only the rises grow.
+- **Themes for the in-between islands: all four**, mixed through the climb: ruins and towers (generator-built,
+  like the castle), crash sites (stock wrecks), groves and spires, pools and landing pads (stock beacons).
+- **Remove the castle tower turrets**: Warthogs only, one per connected group, one at the castle gate.
+- **Lag: trim scenery now** (fewer islands and fewer far-away trees), then retest in Standalone.
+- Drop `tree_gnarled_doublewide` (no collision).
