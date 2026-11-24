@@ -697,7 +697,7 @@ def plan_placements(layout):
     layout["scatter"] = scatter
 
 
-def write_scripts(layout, path):
+def write_scripts(layout, path, release=False):
     """Generated HaloScript (compiled by Tool with launch_lab.hsc): fall guard over every landing surface,
     checkpoints per level, and per-level debug teleports. Functions confirmed with `tool script-doc`:
     volume_test_objects, players, object_can_take_damage, object_cannot_take_damage, game_save, object_teleport, print.
@@ -737,10 +737,11 @@ def write_scripts(layout, path):
             "\t\t(begin (game_save) (print \"checkpoint saved\")))",
             "\t(set flashlight_was_on (unit_get_current_flashlight_state (player0)))",
             ")", ""]
-    out += ["; ---- Debug teleports (dbg_, remove before release): (dbg_tp_level_5) puts you on level 5 -----------"]
-    for lv in layout["levels"]:
-        out += ["(script static void dbg_tp_level_%d" % lv["level"],
-                "\t(object_teleport (player0) level_%d_flag)" % lv["level"], ")"]
+    if not release:   # release builds (tools\build.ps1 -Release) leave the debug teleports out
+        out += ["; ---- Debug teleports (dbg_, not in release builds): (dbg_tp_level_5) puts you on level 5 -------"]
+        for lv in layout["levels"]:
+            out += ["(script static void dbg_tp_level_%d" % lv["level"],
+                    "\t(object_teleport (player0) level_%d_flag)" % lv["level"], ")"]
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="\r\n") as f:
         f.write("\n".join(out) + "\n")
@@ -752,7 +753,7 @@ def get_material(name):
     return bpy.data.materials.get(name) or bpy.data.materials.new(name)
 
 
-def build_scene(level_dir):
+def build_scene(level_dir, release=False):
     for obj in list(bpy.data.objects):
         bpy.data.objects.remove(obj, do_unlink=True)
 
@@ -857,7 +858,7 @@ def build_scene(level_dir):
 
     with open(os.path.join(level_dir, "world_layout.json"), "w", encoding="utf-8") as f:
         json.dump(layout, f, indent=1)
-    write_scripts(layout, os.path.join(level_dir, "scripts", "world.hsc"))
+    write_scripts(layout, os.path.join(level_dir, "scripts", "world.hsc"), release)
 
 
 def export(path):
@@ -873,6 +874,6 @@ def export(path):
 if __name__ == "__main__":
     jms = sys.argv[sys.argv.index("--") + 1] if "--" in sys.argv and len(sys.argv) > sys.argv.index("--") + 1 else None
     level_dir = os.path.dirname(os.path.dirname(jms)) if jms else os.path.join(os.getcwd(), "out")
-    build_scene(level_dir)
+    build_scene(level_dir, release="--release" in sys.argv)
     if jms:
         export(jms)
