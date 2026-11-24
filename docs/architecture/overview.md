@@ -21,7 +21,8 @@ The key frontend-to-Halo translation: geometry is the **static layout**, the sce
  Blender (.blend)  ──export──▶  data\levels\launch_lab\models\*.jms
                                       │ tool structure / lightmaps
                                       ▼
- Sapien (placement) ──saves──▶  tags\levels\launch_lab\launch_lab.scenario  (+ .scenario_structure_bsp)
+ tools\scenario.ps1 (placements as code, invader-edit; ADR 0004)  ──▶  tags\levels\launch_lab\launch_lab.scenario
+ Guerilla / Sapien (sky, viewing) ──saves──▶  same .scenario (then tools\sync.ps1 pull)   (+ .scenario_structure_bsp from Tool)
  VS Code (.hsc)  ──────────▶   data\levels\launch_lab\scripts\*.hsc
                                       │ tool build-cache-file (compiles scripts, packs stock + our tags)
                                       ▼

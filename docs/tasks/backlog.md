@@ -8,7 +8,7 @@ Before starting a task, run `/plan-task <n>`.
 |---|---|---|---|
 | 1 | Local repo + baseline commit | 1 | done |
 | 2 | Toolchain smoke test: Warthog vs grenades on a stock map | 1 | done |
-| 3 | Minimal custom arena with one Warthog, playable in Standalone + MCC | 1 | todo |
+| 3 | Minimal custom arena with one Warthog, playable in Standalone + MCC | 1 | done |
 | 8 | Launch experiment: stacked stock frag explosions | 1 | todo |
 | 4 | Endless grenades (compare 3 methods) | 1 | todo |
 | 5 | Reset Warthog + player | 1 | todo |

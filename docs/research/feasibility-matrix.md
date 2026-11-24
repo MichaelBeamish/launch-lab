@@ -11,7 +11,7 @@ Legend: **Confirmed** (documented) · **Likely** (strong indirect evidence) · *
 |---|---|---|---|
 | Original-engine Warthog + grenade physics | **Proven ✅ (task 2)** | Stock `warthog` and grenade tags in H1A-EK; Standalone and MCC run the real engine. Frags visibly move the Warthog, the same in both | Task 2 (stock map); Task 3 repeats it in our arena |
 | Launching a Warthog with stock grenades | **Unknown** | One frag only nudges it; the throw rate prevents stacking by hand. Stacked stock explosions via `damage_new` at cutscene flags (form used in stock `a10` scripts) | Task 8 |
-| Small custom outdoor arena | **Confirmed** | Blender → JMS → `tool structure` → lightmaps → `build-cache-file` | Task 3 |
+| Small custom outdoor arena | **Proven ✅ (task 3)** | Blender script → JMS → `tool structure` → lightmaps → `build-cache-file`; sealed `+sky` box, zero errors. Placements via `invader-edit` (ADR 0004) | Task 3 |
 | Unlimited grenades | **Likely** | Option A: `cheat_infinite_ammo` (covered grenades in Standalone, task 2; MCC, from a script, untested). Option B: continuous script that tops up through `player_add_equipment` / starting profile. Option C: many respawning grenade pickups (`object_create_anew`) | Task 4 compares options |
 | Reset objects without reloading | **Confirmed** | `object_teleport` to cutscene flags, or `object_destroy` + `object_create_anew` | Task 5 |
 | Trigger: object enters zone | **Confirmed** | `volume_test_object` against a named object, polled in a `continuous` script | Task 6 |
@@ -27,14 +27,14 @@ Legend: **Confirmed** (documented) · **Likely** (strong indirect evidence) · *
 | Chain reactions | **Confirmed (singleplayer only)** | "Detonates explosives" works only in singleplayer, so we build a **singleplayer scenario** | Milestone 3/4 |
 | Large world | **Confirmed, with care** | Tag space 64 MiB; BSP up to 131k surfaces; vehicles die below z ≈ −4950; precision drops far from the origin | Milestone 4 (keep near the origin) |
 | Floating ships / platforms | **Confirmed** | Static scenery or BSP geometry at height. Moving platforms need device machines (not researched) | Milestone 4 |
-| Play in MCC as a custom map | **Likely** | Build with `remastered`/`classic`, launch with EAC off, map in `maps\` (not a subfolder). How the menu lists it is unverified | Task 3 |
+| Play in MCC as a custom map | **Proven ✅ (task 3)** | Built `classic`; **replacement method**: our map as `halo1\maps\a10.map`, MCC with anti-cheat off, played as *The Pillar of Autumn* (`tools/mcc-swap.ps1`). A menu entry of its own: not found; Steam Workshop route unexplored | Task 3 |
 | Browser play (OpenCE) | **Unknown** | Requires an Xbox disc image; MCC-map support is experimental; the physics base is a pre-release Xbox build | Milestone 5 (local only) |
 | Public browser hosting | **Blocker (legal risk)** | The decompiled engine is high-risk to host | Not planned |
 | New mechanics (e.g., direct velocity control) | **Blocker without engine changes** | No `object_set_velocity`. Approximate with invisible `damage_new` impulses (Likely) | Only if needed |
 
 ## Biggest unknowns, in the order we'll test them
-1. Does the dev loop (Standalone → MCC custom map) work on the owner's machine? (Task 2 proved the stock half; task 3 the custom map)
-2. Do MCC custom singleplayer maps appear and play correctly from the menu? (Task 3)
-3. Can stock frags launch a Warthog when explosions are stacked? (Task 8; **MVP risk**)
-4. Which unlimited-grenade method feels right without distorting stock behaviour? (Task 4)
-5. How close is OpenCE physics to our MCC baseline? (Milestone 5)
+1. Can stock frags launch a Warthog when explosions are stacked? (Task 8; **MVP risk**)
+2. Which unlimited-grenade method feels right without distorting stock behaviour? (Task 4)
+3. How close is OpenCE physics to our MCC baseline? (Milestone 5)
+
+Answered: the dev loop works end to end (tasks 2–3); custom SP maps play in MCC via the replacement method (task 3).

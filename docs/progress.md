@@ -2,6 +2,40 @@
 
 Newest first. One entry per verified task or significant decision.
 
+## 2026-11-23 — Task 3: minimal custom arena (Standalone + MCC); ADR 0004 accepted
+- **Installed (owner-approved):**
+  - Blender 4.5.10 LTS (winget, installer hash verified).
+  - Halo Asset Blender Development Toolset master-432, lite build (MIT; inspected: plain Python).
+  - Invader 0.55.0 (GPLv3; SHA-256 verified against GitHub). Local only, outside the repo.
+- **Built:**
+  - `art/launch_lab_arena.py`: the arena as code. A 40 × 40 WU sealed `+sky` box, ramp (top 3 WU) and platform
+    (4 WU high), stock tutorial shaders, UVs.
+  - `tools/build.ps1`: geometry → `structure` → `lightmaps` (draft) → `build-cache-file classic none`.
+  - `tools/scenario.ps1`: placements as code (spawn, Warthog `hog`, 3 frags) via `invader-edit`, with read-back and `check-map`.
+  - `tools/sync.ps1`: repo ↔ tools folder, with a hash-based guard for unpulled GUI work.
+  - `tools/mcc-swap.ps1`: plays our map in MCC as `a10.map`; backup and restore verified by hash and header map name.
+  - The scenario: sky set by the owner in Guerilla.
+- **Experiment:** Sapien was too hard to use without a mouse. `invader-edit` on a scenario copy produced identical
+  `check-map` output and loaded in Standalone → **ADR 0004**.
+- **Build:** zero errors, no `.wrl`; the map uses 3.59 of 64 MiB tag space. Expected warnings: no ambient sound, no level scripts yet.
+- **Playtest:**
+  - Standalone: spawn ✅, ramp 3/3 ✅, frag moves the Warthog ✅, invisible edge wall ✅, nothing odd ✅.
+  - MCC (*The Pillar of Autumn* slot, anti-cheat off, classic graphics): arena loads ✅, pickups give grenades ✅,
+    "everything works" ✅. Stock `a10.map` restored and verified.
+  - No clips.
+- **Unverified:**
+  - The platform is walkable: it can't be reached by driving, since it's the launch target (task 8).
+  - The remastered toggle.
+  - The starting loadout (no grenades at spawn, it seems; task 4).
+- **Verified:** stock hashes PASS after every step; git has only our files; the scenario has no local paths.
+  Code review: 7 important and 3 small findings, all fixed and re-tested with their failure cases. Security review done by hand: no findings.
+- **Learned:**
+  - A missing UV map makes the lightmapper fail ("degenerate triangle [or triangle with bad uvs]").
+  - Lightmap error `.wrl` files land in the tools root.
+  - PowerShell 5.1 turns Tool's stderr warnings into fatal errors under `Stop`.
+  - invader-edit: comma-separated points; angles set in radians, shown in degrees; `object_names` needs `-n`.
+  - MCC plays custom SP maps only by taking a stock map's file name (as far as c20 documents).
+
 ## 2026-11-23 — Task 2: toolchain smoke test (Warthog vs grenades on a stock map)
 - **Built:**
   - `tools/stock-baseline.ps1`: hashes 8 stock physics tags; `tools/stock-tag-hashes.json` is the baseline.

@@ -50,3 +50,26 @@ The owner's review document. Each entry covers what it is, how we use it, and an
 - The important review finding wasn't about physics. `-Record` combined with `-TagsRoot` could have overwritten the baseline
   with a test copy, silently disabling the check. Tools that enforce a rule need their own failure modes tested: the self-test
   now covers a changed tag, a missing tag, a tag dropped from the list, and the refused option combination.
+
+### The level pipeline, end to end (task 3)
+- **What:** Blender script → JMS (text geometry) → `tool structure` (BSP: collision + render geometry; first run also
+  creates the `.scenario`) → `tool lightmaps` (bakes lighting into the BSP) → placements → `tool build-cache-file` (`.map`).
+- **Sealed world:** the BSP is one closed, inward-facing shell. Every edge must border exactly two faces, so all faces
+  are cut on one shared grid (no T-junctions). `+sky` faces are invisible but solid: the "outdoors" is a sealed box.
+- **UVs matter even for plain surfaces:** the lightmapper failed with "degenerate triangle [or triangle with bad uvs]"
+  until every face got texture coordinates. Tool writes the broken triangles to a `.wrl` file.
+- **Frontend analogy:** JMS is source, `tool structure` is the compiler, lightmaps are a build-time asset step, and
+  the `.map` is the production bundle. The scenario is the component tree; `tools/scenario.ps1` renders it from data.
+
+### Placements as code (task 3, ADR 0004)
+- **What:** `invader-edit` sets tag fields from the command line (`block[i].field`). `tools/scenario.ps1` clears and
+  rewrites the placement blocks from a list, reads every value back, and runs `check-map`, so the same input gives a
+  byte-identical scenario.
+- **Gotchas found:** points are comma-separated; angles are *set* in radians but *shown* in degrees; `object_names` is
+  guarded (`-n`).
+- **One-liner:** "When the GUI editor was the bottleneck, I proved a CLI tag editor round-trips our tags against the
+  official compiler, then moved placements into reviewed, re-runnable code."
+
+### Playing a custom singleplayer map in MCC (task 3)
+- c20 only documents a replacement method: our `.map` takes a stock map's file name (`a10.map`), and MCC with anti-cheat
+  disabled loads it as *The Pillar of Autumn*. `tools/mcc-swap.ps1` backs up and restores the stock file, with hashes.

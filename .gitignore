@@ -34,3 +34,15 @@ coverage/
 Thumbs.db
 .DS_Store
 *.blend1
+
+# Generated level build output (task 3): rebuilt from art/*.py and Tool; never committed
+mod/data/**/*.JMS
+mod/data/**/*.jms
+*.wrl
+mod/tags/**/*.scenario_structure_bsp
+
+# Local build output logs (tools/build.ps1)
+build-logs/
+
+# Sync bookkeeping (tools/sync.ps1)
+tools/.sync-state.json

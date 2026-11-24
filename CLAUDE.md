@@ -4,8 +4,8 @@ A physics stunt playground built as a custom **singleplayer map for Halo: Combat
 official mod tools (H1A-EK). Warthogs, endless grenades, chain reactions, challenges. The original engine's physics
 are non-negotiable.
 
-> **Status: Milestone 1.** ADRs 0001–0003 are *Accepted*. Tasks 1–2 are done: the toolchain works on the owner's machine and the
-> stock physics baseline is recorded. No custom content is built yet. Task #3 (minimal arena) is next; task 8 follows it.
+> **Status: Milestone 1.** ADRs 0001–0004 are *Accepted*. Tasks 1–3 are done: our minimal arena (ramp, platform, Warthog,
+> frag pickups) builds with zero errors and plays in Standalone and MCC. Task #8 (stacked-explosion launch) is next.
 
 The owner is an experienced Vue/TypeScript developer returning to engineering, and **new to Halo modding**.
 Their earlier projects with Claude are The Ink Tank (`creature-world`) and Commuting Through Time. Launch Lab uses the same
@@ -51,6 +51,9 @@ way of working. **Never modify those repositories.**
   inside the tools folder.
 - **GUI steps (Sapien, Guerilla, the game itself) are done by the owner.** Claude writes exact step-by-step instructions,
   then waits for the result.
+- **Scenario placements are code (ADR 0004):** spawns, vehicles, equipment and object names live in `tools/scenario.ps1`
+  and are applied with `invader-edit`. After each change: `tool check-map`, the stock hash check, a Standalone load.
+  Sapien is for viewing; any GUI edit is pulled into the repo (`tools\sync.ps1 pull`) and reconciled with the script.
 - **Machine-specific paths** (Steam and H1A-EK install folder) go only in the git-ignored `tools/local.config.ps1`.
 - **Budgets:** 2048 runtime objects; 256 placed vehicles; 64 MiB tag space; scripts tick at 30 Hz. Keep the world near the origin.
 - **Naming and legal:** "Halo" is used only descriptively. No logos. Nothing commercial.
@@ -85,10 +88,11 @@ Vitest for CI-side tooling (from task 7) · Git + GitHub.
 | Command | Purpose | Added by |
 |---|---|---|
 | `powershell -ExecutionPolicy Bypass -File tools\stock-baseline.ps1` | Stock physics tags unchanged (ADR 0002); exit 0 = PASS | task 2 |
-| `tools\sync.ps1` | Copy `mod\` into the H1A-EK folder | task 3 |
-| `tool structure levels\launch_lab launch_lab` | Build the BSP from JMS | task 3 |
-| `tool build-cache-file levels\launch_lab\launch_lab classic` | Build the map (compiles scripts); see c20 for the flags | task 3 |
-| `halo_tag_test.exe` → `map_name levels\launch_lab\launch_lab` | Fast dev playtest | task 3 |
+| `powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Step all` | Geometry (Blender) → `tool structure` → `tool lightmaps` → `tool build-cache-file … classic none`; fails on any error line or new `.wrl` | task 3 |
+| `powershell -ExecutionPolicy Bypass -File tools\scenario.ps1` | Apply placements (ADR 0004); read-back + `tool check-map` | task 3 |
+| `powershell -ExecutionPolicy Bypass -File tools\sync.ps1 push\|pull` | Repo ↔ tools folder (`pull` after any Sapien/Guerilla save) | task 3 |
+| `powershell -ExecutionPolicy Bypass -File tools\standalone.ps1` | Standalone, windowed, loads `levels\launch_lab\launch_lab` via `init.txt` | tasks 2–3 |
+| `powershell -ExecutionPolicy Bypass -File tools\mcc-swap.ps1 install\|restore\|status` | Play our map in MCC as *The Pillar of Autumn* (anti-cheat off); always `restore` after | task 3 |
 | CI guard + HSC lint | Repo hygiene and script sanity | task 7 |
 
 Before a task is done: every command added so far must pass, and the task's playtest must be recorded.
