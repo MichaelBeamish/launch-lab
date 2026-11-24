@@ -95,6 +95,7 @@ Vitest for CI-side tooling (from task 7) · Git + GitHub.
 | `powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Step all` | World generator (Blender) → devices → `tool structure` + `tool lightmaps` (skipped if the geometry is unchanged) → placements → `tool build-cache-file … classic none`; fails on any error line or new `.wrl` | tasks 3, 11 |
 | `powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Step devices` | Build gameplay devices (pile gun, shield gun) from stock tags (ADR 0005); ends with the stock hash check | task 9 |
 | `powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Step all -Release` | Release map: quality-0/0.3 lighting, no debug scripts, dated copy + SHA-256 outside the repo (`-FinalLighting` = slow quality 1) | task 17 |
+| `powershell -ExecutionPolicy Bypass -File tools\package-mod.ps1 [-Images <folder>]` | Excession mod folder from the newest release map (ADR 0006); publishing steps in `docs/release/workshop-upload.md` | task 20 |
 | `powershell -ExecutionPolicy Bypass -File tools\scenario.ps1` | Apply placements (ADR 0004); read-back + `tool check-map` | task 3 |
 | `powershell -ExecutionPolicy Bypass -File tools\sync.ps1 push\|pull` | Repo ↔ tools folder (`pull` after any Sapien/Guerilla save) | task 3 |
 | `powershell -ExecutionPolicy Bypass -File tools\standalone.ps1` | Standalone, windowed, loads `levels\launch_lab\launch_lab` via `init.txt` | tasks 2–3 |
