@@ -8,6 +8,7 @@
     structure  sync push, then: tool structure levels\launch_lab launch_lab
                (first run also creates tags\levels\launch_lab\launch_lab.scenario; then run sync pull)
     lightmaps  tool lightmaps levels\launch_lab\launch_lab launch_lab <quality> <stop>   (default 0 0.3: fast draft)
+    devices    tools\devices.ps1: gameplay device tags generated from stock (ADR 0005)
     cache      tool build-cache-file levels\launch_lab\launch_lab classic none  -> <tools>\maps\launch_lab.map
   Tool usage strings were read from the installed tool.exe (task 3).
 
@@ -18,7 +19,7 @@
   powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Step all
 #>
 param(
-    [ValidateSet('jms', 'structure', 'lightmaps', 'cache', 'all')][string]$Step = 'all',
+    [ValidateSet('jms', 'structure', 'lightmaps', 'devices', 'cache', 'all')][string]$Step = 'all',
     [ValidateSet('0', '1')][string]$LightmapQuality = '0',
     [string]$LightmapStop = '0.3'
 )
@@ -79,7 +80,8 @@ function Invoke-Step($name, $exe, [string[]]$arguments, $workDir) {
     Write-Host "OK: $name (exit $code). Log: build-logs\$name.log" -ForegroundColor Green
 }
 
-$steps = if ($Step -eq 'all') { 'jms', 'structure', 'lightmaps', 'cache' } else { @($Step) }
+# devices first: the scenario references the device tags (starting weapons), and every later step loads it.
+$steps = if ($Step -eq 'all') { 'jms', 'devices', 'structure', 'lightmaps', 'cache' } else { @($Step) }
 foreach ($s in $steps) {
     switch ($s) {
         'jms' {
@@ -99,6 +101,10 @@ foreach ($s in $steps) {
         }
         'lightmaps' {
             Invoke-Step 'lightmaps' $Tool @('lightmaps', 'levels\launch_lab\launch_lab', 'launch_lab', $LightmapQuality, $LightmapStop) $LaunchLab.ToolsRoot
+        }
+        'devices' {
+            # Gameplay device tags generated from stock (ADR 0005); git-ignored, rebuilt here.
+            Invoke-Step 'devices' 'powershell.exe' @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $PSScriptRoot 'devices.ps1')) $Repo
         }
         'cache' {
             Invoke-Step 'cache' $Tool @('build-cache-file', 'levels\launch_lab\launch_lab', 'classic', 'none') $LaunchLab.ToolsRoot

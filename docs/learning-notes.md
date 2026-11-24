@@ -82,3 +82,14 @@ The owner's review document. Each entry covers what it is, how we use it, and an
   blasts. Force from simultaneous explosions adds up; one frag nudges a Warthog, eight launch it to the ceiling.
 - **Frontend analogy:** an effect is like a component that renders its children (sound, particles, damage); and a static
   script is a function you call from devtools (the console), with brackets: `(dbg_boom_4)`.
+
+### Devices: how a gun can "shoot" an item (task 9, ADR 0005)
+- **A weapon trigger only fires projectiles** ("equipment tags cannot be referenced here"). So the chain is gun →
+  projectile → its detonation **effect** → an effect part that **creates an object** (here a stock grenade or overshield
+  pickup). Stock effects already do this (the Flood bursting into body parts).
+- **Projectile speed:** `initial_velocity`/`final_velocity`. A non-zero final speed is *held* (bullets, needles), so a
+  grenade-like pellet needs final = 0 and only an initial muzzle speed, or it bounces forever.
+- **Projectiles react per surface** (`projectile_material_response`): the inherited frag responses played a rubble pop
+  on settling until their `detonation_effect` was cleared.
+- **Frontend analogy:** like extending a design-system component through its props (model, effect, sound) without
+  forking its internals: every force on screen is still the stock grenade and its stock explosion.

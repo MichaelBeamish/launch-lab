@@ -2,6 +2,25 @@
 
 Newest first. One entry per verified task or significant decision.
 
+## 2026-11-23 — Task 9: grenade pile gun and overshield gun (ADR 0005)
+- **Built:** `tools/devices.ps1` generates two devices from stock tags with `invader-edit`:
+  - **Pile gun:** stock pistol copy → frag-projectile pellet (muzzle speed 8, final 0; per-surface detonation effects
+    cleared) → effect whose one part creates a stock frag grenade pickup. The firing sound is the stock melee thump.
+  - **Shield gun:** stock plasma pistol copy (both triggers, no battery drain) → pellet with the overshield orb model →
+    effect creating a stock overshield.
+  - The starting profile gives both guns plus 4 frags. Build order: devices before structure.
+- **Playtest (Standalone), each problem fixed in turn:**
+  - Pellets first bounced forever (final velocity 8 is held constant) → fixed.
+  - A rubble pop on settling (inherited surface detonation effects) → fixed.
+  - The throw sound sounded like a live frag → changed to a thump ("sounds great").
+  - Piles form where you aim; **one thrown frag cascades the pile and launches the Warthog "super far"**.
+  - Overshields drop and can be picked up. The orb sinks into the floor briefly (cosmetic, kept).
+  - The plasma pistol keeps its stock look and sound (owner's choice).
+- **Verified:** fresh full build OK; `check-map` OK; stock hashes PASS (also enforced at the end of `devices.ps1`).
+  Code review: 10 findings (5 important) fixed and re-tested, including a fresh-machine build-order bug.
+  Also fixed: a `scenario.ps1` success-flag bug that let a failed read-back exit 0.
+- **Not verified:** MCC play of the guns (Standalone only so far).
+
 ## 2026-11-23 — Task 8: stacked stock frag explosions launch the Warthog; lighter process
 - **Built:**
   - Our first HaloScript, `launch_lab.hsc`: debug `dbg_boom_N` and `dbg_hog_reset`. Every function was confirmed with

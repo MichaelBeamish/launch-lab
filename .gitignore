@@ -46,3 +46,4 @@ build-logs/
 
 # Sync bookkeeping (tools/sync.ps1)
 tools/.sync-state.json
+

@@ -10,7 +10,7 @@ Before starting a task, run `/plan-task <n>`.
 | 2 | Toolchain smoke test: Warthog vs grenades on a stock map | 1 | done |
 | 3 | Minimal custom arena with one Warthog, playable in Standalone + MCC | 1 | done |
 | 8 | Launch experiment: stacked stock frag explosions | 1 | done |
-| 9 | Grenade pile gun: shots drop stock frag pickups that chain-react | 1 | todo |
+| 9 | Grenade pile gun + overshield gun (devices from stock tags) | 1 | done |
 | 4 | Endless grenades (compare 3 methods) | 1 | todo |
 | 5 | Reset Warthog + player | 1 | todo |
 | 6 | Landing-platform challenge + feedback | 2 | todo |
@@ -61,8 +61,10 @@ says pickups are `destroyed_by_explosions` (0.4–0.8 s delay) and the frag expl
 chain-react. A trigger can't fire equipment ("equipment tags cannot be referenced here"), so the chain is: gun (copy of the
 stock pistol) → pellet (copy of the pistol bullet, no damage) → impact effect (ours) whose one part creates the stock
 `frag grenade.equipment`. The tags are built as code from stock with `invader-edit` (ADR 0005).
+*Extended by the owner:* a second gun (plasma pistol copy) that drops stock overshields the same way.
 **Accept:**
 - You spawn with the gun; shots leave grenade pickups on the floor.
+- The second gun's shots become overshield pickups you can collect.
 - One thrown grenade sets off a pile, which cascades.
 - The stock hash check passes; `check-map` and the cache build are clean.
 

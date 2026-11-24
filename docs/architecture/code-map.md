@@ -20,6 +20,7 @@ tuning global is added, renamed or removed. A drift check will come with the CI 
 | `mod/data/levels/launch_lab/scripts/launch_lab.hsc` | Level HaloScript. Debug-only `dbg_` scripts: `(dbg_boom_1..8)` stacked stock frag explosions at `boom_flag`, `(dbg_hog_reset)` |
 | `tools/build.ps1` | Build steps `jms`, `structure`, `lightmaps`, `cache` (or `all`); fails on error lines or a new `.wrl`; logs in `build-logs/` (ignored) |
 | `tools/sync.ps1` | `push` repo → tools folder; `pull` the `.scenario` back after a GUI edit. Refuses to push over unpulled GUI work |
+| `tools/devices.ps1` | **Gameplay devices from stock** (ADR 0005): pile gun (pistol → frag pellet → stock frag pickup) and shield gun (plasma pistol → orb pellet → stock overshield). Every change from stock listed and read back; outputs generated in the tools folder (git-ignored) |
 | `tools/mcc-swap.ps1` | `install` / `restore` / `status`: plays our map in MCC in place of a stock SP map (`a10`), with a SHA-256-checked backup |
 | `tools/local.config.ps1` | **Git-ignored.** Machine paths: mod tools folder (`ToolsRoot`) and MCC folder (`GameRoot`) |
 | `tools/stock-baseline.ps1` | Hashes the stock physics tags and compares them with the baseline (ADR 0002); `-Record` rewrites it |
@@ -40,6 +41,8 @@ Arena layout (`art/launch_lab_arena.py`): 40 × 40 WU, ceiling 30 WU; ramp x −
 y 8..16, 4 WU high (not reachable by driving; the launch target).
 
 ## To change X, edit Y
+- **Change a gun or what it drops** → edit `$Devices` in `tools/devices.ps1`, then `tools\build.ps1 -Step devices` (Standalone reads the new tags at load).
+- **Change the starting loadout** → `$StartingProfile` in `tools/scenario.ps1`.
 - **Move or add a spawn, vehicle or pickup** → edit the lists at the top of `tools/scenario.ps1`, run it, then load in Standalone.
 - **Change the arena shape** → edit the layout constants in `art/launch_lab_arena.py`, then `tools\build.ps1 -Step all`.
 - **Play our map in MCC** → `tools\build.ps1 -Step cache`, `tools\mcc-swap.ps1 install`, play *The Pillar of Autumn* (anti-cheat off), then `tools\mcc-swap.ps1 restore`.

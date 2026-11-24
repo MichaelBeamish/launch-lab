@@ -92,6 +92,7 @@ Vitest for CI-side tooling (from task 7) · Git + GitHub.
 |---|---|---|
 | `powershell -ExecutionPolicy Bypass -File tools\stock-baseline.ps1` | Stock physics tags unchanged (ADR 0002); exit 0 = PASS | task 2 |
 | `powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Step all` | Geometry (Blender) → `tool structure` → `tool lightmaps` → `tool build-cache-file … classic none`; fails on any error line or new `.wrl` | task 3 |
+| `powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Step devices` | Build gameplay devices (pile gun, shield gun) from stock tags (ADR 0005); ends with the stock hash check | task 9 |
 | `powershell -ExecutionPolicy Bypass -File tools\scenario.ps1` | Apply placements (ADR 0004); read-back + `tool check-map` | task 3 |
 | `powershell -ExecutionPolicy Bypass -File tools\sync.ps1 push\|pull` | Repo ↔ tools folder (`pull` after any Sapien/Guerilla save) | task 3 |
 | `powershell -ExecutionPolicy Bypass -File tools\standalone.ps1` | Standalone, windowed, loads `levels\launch_lab\launch_lab` via `init.txt` | tasks 2–3 |
