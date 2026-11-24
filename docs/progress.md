@@ -2,6 +2,19 @@
 
 Newest first. One entry per verified task or significant decision.
 
+## 2026-11-24 — Task 7: GitHub repository and CI
+- **GitHub (owner-approved):** public repository https://github.com/MichaelBeamish/launch-lab (no "Halo" in the name).
+  The full history was audited first: no local paths or personal email, no game or binary files in any commit.
+- **CI** (`ci/`, strict TypeScript + Vitest, GitHub Actions on every push and PR):
+  - **Repo guard:** no built maps, game data, binaries or generated files (JMS, BSP, device tags, layout, `world.hsc`);
+    tags only under `mod/tags/levels/launch_lab/` (and only `.scenario`); no local machine paths in text files.
+  - **HaloScript lint:** balanced forms and strings; only `script`/`global` at the top level; every engine function
+    must be in `ci/hsc-functions.json`, the list confirmed with `tool script-doc` (CLAUDE.md rule 7, enforced).
+  - **World generator** syntax check (`py_compile`).
+- **Verified:** typecheck clean; 34/34 tests (including deliberately bad cases); the guard is clean on the repo. A
+  deliberately bad commit fails: `.gitignore` refuses a `.map`, a force-added `.map` is caught by the guard, and an
+  unconfirmed function (`object_set_velocity`) is caught by the lint.
+
 ## 2026-11-24 — Task 11: the Sky Islands world (the MVP)
 - **Built:**
   - `art/launch_lab_arena.py` is now the **world generator**:

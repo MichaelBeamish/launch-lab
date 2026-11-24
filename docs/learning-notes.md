@@ -110,3 +110,10 @@ The owner's review document. Each entry covers what it is, how we use it, and an
 - **Solids must never touch:** bridges needed "landing notches" in the islands, and castle parts keep 0.2 WU gaps.
 - **One-liner:** "I moved a Halo level from hand-placed content to a deterministic generator, then hit and engineered
   around the engine's real limits (trigger-volume caps, solid intersections, fall-death state) with automated checks."
+
+### CI for a game mod (task 7)
+- **What:** CI can't run the game or the Windows-only mod tools, so it guards what it can: repo hygiene (no game data or
+  generated files, no local paths) and HaloScript sanity. Gameplay stays verified by playtests.
+- **Rule as code:** "every HaloScript function must be confirmed" became an allowlist (`ci/hsc-functions.json`): using a
+  new function means confirming it with `tool script-doc` and adding it on purpose, in review.
+- **Frontend analogy:** a lint rule plus a dependency allowlist, like banning unreviewed imports.

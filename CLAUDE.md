@@ -98,6 +98,6 @@ Vitest for CI-side tooling (from task 7) · Git + GitHub.
 | `powershell -ExecutionPolicy Bypass -File tools\sync.ps1 push\|pull` | Repo ↔ tools folder (`pull` after any Sapien/Guerilla save) | task 3 |
 | `powershell -ExecutionPolicy Bypass -File tools\standalone.ps1` | Standalone, windowed, loads `levels\launch_lab\launch_lab` via `init.txt` | tasks 2–3 |
 | `powershell -ExecutionPolicy Bypass -File tools\mcc-swap.ps1 install\|restore\|status` | Play our map in MCC as *The Pillar of Autumn* (anti-cheat off); always `restore` after | task 3 |
-| CI guard + HSC lint | Repo hygiene and script sanity | task 7 |
+| `cd ci; npm ci; npm run typecheck; npm test; npm run guard` | CI (also on GitHub Actions for every push and PR): strict TypeScript, unit tests, repo guard (no game/generated files, tags only in our folder, no local paths) + HaloScript lint (balanced forms, only confirmed functions from `ci/hsc-functions.json`) | task 7 |
 
 Before a task is done: every command added so far must pass, and the task's playtest must be recorded.

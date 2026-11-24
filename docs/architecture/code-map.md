@@ -23,6 +23,8 @@ tuning global is added, renamed or removed. A drift check will come with the CI 
 | `tools/build.ps1` | Steps `jms`, `devices`, `structure`, `lightmaps`, `scenario`, `cache` (or `all`). Skips structure + lightmaps when the geometry is unchanged (`-Rebuild` forces); draft lightmaps by default (`-LightmapQuality 1 -LightmapStop 0.3` for release); fails on error lines or a new `.wrl`; logs in `build-logs/` (ignored) |
 | `tools/sync.ps1` | `push` repo → tools folder; `pull` the `.scenario` back after a GUI edit. Refuses to push over unpulled GUI work (hash-based) |
 | `tools/devices.ps1` | **Gameplay devices from stock** (ADR 0005): pile gun (pistol → frag pellet → stock frag pickup) and shield gun (plasma pistol → orb pellet → stock overshield). Every change from stock listed and read back; outputs generated in the tools folder (git-ignored) |
+| `ci/` | **CI** (task 7): `src/guard.ts` (repo hygiene), `src/hsc-lint.ts` (HaloScript lint), `src/cli.ts` (runs both over `git ls-files`), `test/` (Vitest, incl. deliberately bad cases), `hsc-functions.json` (confirmed engine functions) |
+| `.github/workflows/ci.yml` | GitHub Actions: runs the CI on every push to `main` and every pull request |
 | `tools/mcc-swap.ps1` | `install` / `restore` / `status`: plays our map in MCC in place of a stock SP map (`a10`), with a SHA-256-checked backup |
 | `tools/local.config.ps1` | **Git-ignored.** Machine paths: mod tools folder (`ToolsRoot`) and MCC folder (`GameRoot`) |
 | `tools/stock-baseline.ps1` | Hashes the stock physics tags and compares them with the baseline (ADR 0002); `-Record` rewrites it |
@@ -55,4 +57,5 @@ hops 30, 45, 65, 90, then 115 WU; one Warthog per group of connected islands. Li
 - **Change what grows where** → `SCATTER_ISLAND` / `SCATTER_GROUND` and `plan_placements` (generator); stock paths in `$SceneryKinds` (`tools/scenario.ps1`).
 - **Play our map in MCC** → `tools\build.ps1 -Step cache`, `tools\mcc-swap.ps1 install`, play *The Pillar of Autumn* (anti-cheat off), then `tools\mcc-swap.ps1 restore`.
 - **Change what Standalone does at startup** (level, cheats) → edit `tools/standalone/init.txt`, relaunch with `tools\standalone.ps1`.
+- **Use a new HaloScript function** → confirm it with `tool script-doc <name>`, then add it to `ci/hsc-functions.json` (CI rejects unconfirmed calls).
 - **Protect another stock tag** → add it to `$StockTags` in `tools/stock-baseline.ps1`, then re-record (owner's OK).

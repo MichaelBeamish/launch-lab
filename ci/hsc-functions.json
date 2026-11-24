@@ -1,0 +1,18 @@
+{
+  "_comment": "Engine functions our HaloScript may call. Each was confirmed in the installed H1A tools with `tool script-doc <name>` (or, for player0, in the stock data/global_scripts.hsc). Add a function here only after confirming it the same way (CLAUDE.md rule 7).",
+  "functions": [
+    "effect_new",
+    "damage_new",
+    "object_create_anew",
+    "object_teleport",
+    "objects_distance_to_flag",
+    "print",
+    "player0",
+    "players",
+    "volume_test_objects",
+    "object_can_take_damage",
+    "object_cannot_take_damage",
+    "game_save",
+    "unit_get_current_flashlight_state"
+  ]
+}
